@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>第八課《四季的歌聲》寫作草稿與批改平台</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #cbd5e1;
+      --primary: #0f766e;
+      --primary-dark: #115e59;
+      --primary-soft: #f0fdfa;
+      --accent: #f59e0b;
+      --accent-soft: #fffbeb;
+      --ok: #16a34a;
+      --ok-soft: #dcfce7;
+      --warn: #d97706;
+      --warn-soft: #fef3c7;
+      --season-color: #ec4899;
+      --season-soft: #fdf2f8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 14px 12px 60px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--surface);
+      border-radius: 18px;
+      padding: 22px 24px 28px;
+      box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+      border: 1px solid #e2e8f0;
+    }
+
+    /* 頂部狀態與標題 */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 16px;
+      font-size: 0.92rem;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      color: #065f46;
+    }
+    .status-pill.offline { color: #92400e; }
+    .top-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+    .mini-btn {
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #334155;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s;
+    }
+    .mini-btn:hover { background: #f1f5f9; border-color: #94a3b8; }
+    .mini-btn.highlight { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; }
+    .mini-btn.highlight:hover { background: #dbeafe; }
+
+    header.hero {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    header.hero h1 {
+      font-size: 1.75rem;
+      font-weight: 900;
+      color: #0f172a;
+      letter-spacing: 0.5px;
+    }
+    header.hero p {
+      color: var(--muted);
+      font-size: 0.96rem;
+      margin-top: 4px;
+    }
+
+    /* 座號選擇 */
+    .seat-box {
+      background: #f8fafc;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .seat-box label {
+      font-weight: 900;
+      font-size: 1.05rem;
+      color: #1e293b;
+      white-space: nowrap;
+    }
+    .seat-box select {
+      flex: 1;
+      min-width: 210px;
+      padding: 10px 14px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      border: 2px solid #94a3b8;
+      border-radius: 10px;
+      background: #fff;
+      color: #0f172a;
+      cursor: pointer;
+    }
+    .seat-box select:focus { outline: none; border-color: var(--primary); }
+
+    /* 四季分頁標籤 */
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 0;
+    }
+    .tab-btn {
+      border: 2px solid #e2e8f0;
+      border-bottom: none;
+      background: #f8fafc;
+      color: #475569;
+      padding: 12px 8px;
+      border-radius: 12px 12px 0 0;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover { background: #f1f5f9; }
+    .tab-btn.active {
+      background: #fff;
+      color: #0f172a;
+      border-color: var(--season-color);
+      box-shadow: 0 -3px 0 var(--season-color) inset;
+    }
+    .tab-badge {
+      font-size: 0.76rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      color: #475569;
+      font-weight: 700;
+    }
+    .tab-badge.done { background: var(--ok-soft); color: #15803d; }
+    .tab-badge.draft { background: var(--warn-soft); color: #b45309; }
+
+    /* 主寫作卡片 */
+    .workspace-card {
+      border: 2px solid var(--season-color);
+      border-radius: 0 0 14px 14px;
+      padding: 18px 18px 20px;
+      background: #fff;
+    }
+    .season-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+      border-bottom: 1px dashed #cbd5e1;
+    }
+    .season-title {
+      font-size: 1.25rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mood-pill {
+      font-size: 0.85rem;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: var(--season-soft);
+      color: #334155;
+      font-weight: 800;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    /* 整合引導區 */
+    .guide-block {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+    .guide-block-title {
+      font-weight: 900;
+      font-size: 0.98rem;
+      color: #1e293b;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .guide-subnote {
+      font-size: 0.84rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    /* 聲音點選鈕 */
+    .sound-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+      gap: 8px;
+    }
+    .sound-chip {
+      text-align: left;
+      background: #fff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 8px 11px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .sound-chip:hover {
+      border-color: var(--season-color);
+      background: var(--season-soft);
+      transform: translateY(-1px);
+    }
+    .sound-chip.selected {
+      border-color: var(--season-color);
+      background: var(--season-soft);
+      box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.15);
+    }
+    .sound-word {
+      font-size: 1rem;
+      font-weight: 900;
+      color: #0f172a;
+    }
+    .sound-zhuyin {
+      font-size: 0.78rem;
+      color: #0f766e;
+      font-weight: 700;
+    }
+    .sound-desc {
+      font-size: 0.8rem;
+      color: #475569;
+      line-height: 1.35;
+    }
+
+    /* 主角靈感 Chips */
+    .hero-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 6px;
+    }
+    .hero-tag {
+      background: #fff;
+      border: 1px dashed #94a3b8;
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #334155;
+    }
+    .warning-note {
+      margin-top: 8px;
+      background: #fef2f2;
+      color: #b91c1c;
+      border-left: 4px solid #ef4444;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    /* 7句寫作大原則公式 */
+    .formula-box {
+      background: var(--accent-soft);
+      border: 1.5px solid #fcd34d;
+      border-radius: 12px;
+      padding: 13px 16px;
+      margin-bottom: 14px;
+    }
+    .formula-list {
+      list-style: none;
+      display: grid;
+      gap: 5px;
+      font-size: 0.92rem;
+    }
+    .formula-list li {
+      display: flex;
+      gap: 8px;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+    .line-num {
+      display: inline-block;
+      min-width: 56px;
+      font-weight: 900;
+      color: #b45309;
+    }
+    .formula-code {
+      background: rgba(255, 255, 255, 0.85);
+      padding: 1px 7px;
+      border-radius: 5px;
+      border: 1px solid #fde68a;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    /* 可收合示範詩 */
+    details.example-details {
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      background: #ffffff;
+    }
+    details.example-details summary {
+      cursor: pointer;
+      font-weight: 900;
+      color: #1e40af;
+      font-size: 0.95rem;
+      user-select: none;
+    }
+    .example-poem {
+      margin-top: 10px;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border-left: 4px solid #3b82f6;
+      border-radius: 6px;
+      font-size: 0.96rem;
+      line-height: 1.8;
+      white-space: pre-line;
+    }
+    .example-tip {
+      margin-top: 6px;
+      font-size: 0.86rem;
+      color: #475569;
+      font-weight: 700;
+    }
+
+    /* 寫作框工具列與輸入區 */
+    .editor-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .btn-skeleton {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1.5px solid #93c5fd;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn-skeleton:hover { background: #dbeafe; }
+
+    textarea.draft-input {
+      width: 100%;
+      min-height: 240px;
+      padding: 14px 16px;
+      font-size: 1.08rem;
+      line-height: 1.85;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      resize: vertical;
+      font-family: inherit;
+      color: #0f172a;
+      background: #ffffff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    textarea.draft-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+    #save-status { font-weight: 800; color: #059669; }
+
+    /* 底部操作鈕 */
+    .action-bar {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+      position: sticky;
+      bottom: 12px;
+      background: rgba(255, 255, 255, 0.96);
+      padding: 10px 0 4px;
+      border-top: 1px solid #e2e8f0;
+      z-index: 10;
+    }
+    .action-btn {
+      flex: 1;
+      padding: 14px 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 900;
+      cursor: pointer;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      transition: transform 0.1s, opacity 0.15s;
+    }
+    .action-btn:active { transform: scale(0.98); }
+    .action-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-save { background: #f59e0b; }
+    .btn-save:hover:not(:disabled) { background: #d97706; }
+    .btn-grade { background: #0f766e; }
+    .btn-grade:hover:not(:disabled) { background: #115e59; }
+
+    /* 批改結果與結構健檢區 */
+    .feedback-panel {
+      margin-top: 22px;
+      border-radius: 14px;
+      border: 2px solid #99f6e4;
+      background: #f0fdfa;
+      padding: 18px;
+      display: none;
+    }
+    .feedback-panel.show { display: block; }
+    .feedback-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .feedback-header h3 { font-size: 1.15rem; color: #0f766e; font-weight: 900; }
+    .score-pill {
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 0.92rem;
+      background: #ccfbf1;
+      color: #115e59;
+    }
+
+    .checklist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .check-item {
+      background: #fff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 8px 11px;
+      font-size: 0.88rem;
+    }
+    .check-item.ok { border-color: #86efac; background: #f0fdf4; }
+    .check-item.miss { border-color: #fcd34d; background: #fffbeb; }
+    .check-title { font-weight: 900; margin-bottom: 2px; }
+    .check-tip { color: #475569; font-size: 0.84rem; line-height: 1.4; }
+
+    .ai-feedback-box {
+      background: #fff;
+      border-left: 5px solid #0f766e;
+      border-radius: 8px;
+      padding: 14px 16px;
+      line-height: 1.75;
+      color: #1e293b;
+      font-size: 0.98rem;
+    }
+    .ai-feedback-box ul { padding-left: 20px; margin: 6px 0; }
+    .ai-feedback-box p { margin-bottom: 6px; }
+
+    .loading-box {
+      display: none;
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 10px;
+      background: #eff6ff;
+      color: #1e40af;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    /* 預覽整篇童詩 Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 999;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-card {
+      background: #fff;
+      width: 100%;
+      max-width: 680px;
+      max-height: 88vh;
+      overflow-y: auto;
+      border-radius: 16px;
+      padding: 22px 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 10px;
+    }
+    .poem-full-preview {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 16px 18px;
+      line-height: 1.9;
+      white-space: pre-wrap;
+      font-size: 1.02rem;
+      border: 1px solid #cbd5e1;
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 14px 12px 22px; }
+      .tabs { grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 8px; }
+      .tab-btn { border-radius: 10px; border-bottom: 2px solid #e2e8f0; }
+      .workspace-card { border-radius: 12px; padding: 14px 12px; }
+      .action-bar { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="top-bar">
+      <span id="cloud-status" class="status-pill">🟢 雲端連線就緒（Supabase 即時同步）</span>
+      <div class="top-actions">
+        <button type="button" class="mini-btn highlight" onclick="openPreviewModal()">✨ 預覽整篇童詩</button>
+        <a href="teacher.html" class="mini-btn">👨‍🏫 教師後台</a>
+      </div>
+    </div>
+
+    <header class="hero">
+      <h1>📝 第八課《四季的歌聲》寫作草稿平台</h1>
+      <p>依「春 → 夏 → 秋 → 冬」寫下四段童詩，點選按鈕就會自動檢查 7 句結構並給建議！</p>
+    </header>
+
+    <div class="seat-box">
+      <label for="student-seat">🙋 請選擇你的座號（1～29 號）：</label>
+      <select id="student-seat">
+        <option value="">-- 點我選擇座號（1～29 號）--</option>
+      </select>
+    </div>
+
+    <div class="tabs" id="season-tabs">
+      <button type="button" class="tab-btn active" data-tab="p1" onclick="switchTab('p1')">
+        <span>🌸 第一段：春天</span>
+        <span class="tab-badge" id="badge-p1">未寫</span>
+      </button>
+      <button type="button" class="tab-btn" data-tab="p2" onclick="switchTab('p2')">
+        <span>☀️ 第二段：夏天</span>
+        <span class="tab-badge" id="badge-p2">未寫</span>
+      </button>
+      <button type="button" class="tab-btn" data-tab="p3" onclick="switchTab('p3')">
+        <span>🍂 第三段：秋天</span>
+        <span class="tab-badge" id="badge-p3">未寫</span>
+      </button>
+      <button type="button" class="tab-btn" data-tab="p4" onclick="switchTab('p4')">
+        <span>❄️ 第四段：冬天</span>
+        <span class="tab-badge" id="badge-p4">未寫</span>
+      </button>
+    </div>
+
+    <div class="workspace-card" id="workspace-card">
+      <div class="season-header">
+        <div class="season-title" id="season-title">🌸 第一段：春天的歌聲</div>
+        <div class="mood-pill" id="season-mood">心情：開心、熱鬧</div>
+      </div>
+
+      <!-- ① 聲音百寶箱 -->
+      <div class="guide-block">
+        <div class="guide-block-title">
+          <span>① 挑一個這個季節的聲音（點一下自動填入第 3 句！）</span>
+          <span class="guide-subnote">單字聲音要寫 3 次，或選 4 個字的聲音</span>
+        </div>
+        <div class="sound-grid" id="sound-grid"></div>
+      </div>
+
+      <!-- ② 主角靈感 -->
+      <div class="guide-block">
+        <div class="guide-block-title">
+          <span>② 第 4 句主角靈感（要寫「誰＋在做什麼」，不要寫「〇〇的聲音」）</span>
+        </div>
+        <div class="hero-list" id="hero-list"></div>
+        <div id="season-warning" class="warning-note" style="display:none;"></div>
+      </div>
+
+      <!-- ③ 第4~7句大原則結構公式 -->
+      <div class="formula-box">
+        <div class="guide-block-title" style="color:#92400e;">
+          <span>③ 7 句寫詩結構（照公式自由發揮你的想像力！）</span>
+        </div>
+        <ul class="formula-list" id="formula-list"></ul>
+      </div>
+
+      <!-- ④ 可收合示範詩 -->
+      <details class="example-details" id="example-details">
+        <summary>👀 點我看這一季的示範詩（看看別人怎麼發揮想像力）</summary>
+        <div class="example-poem" id="example-poem"></div>
+        <div class="example-tip" id="example-tip"></div>
+      </details>
+
+      <!-- ⑤ 寫作草稿區 -->
+      <div class="editor-toolbar">
+        <strong style="font-size:1rem;color:#1e293b;">✍️ 在這裡寫下這一段的草稿：</strong>
+        <button type="button" class="btn-skeleton" onclick="insertSkeleton()">🪄 填入 7 句空白骨架</button>
+      </div>
+
+      <textarea id="draft-textarea" class="draft-input" placeholder="先選座號，再點上面的「🪄 填入 7 句空白骨架」或直接寫出你的 7 句童詩..."></textarea>
+
+      <div class="meta-row">
+        <span id="save-status">🟢 隨打即存已就緒</span>
+        <span id="line-counter">目前 0 行 / 0 字</span>
+      </div>
+
+      <div class="action-bar">
+        <button type="button" class="action-btn btn-save" onclick="saveDraft(true)">💾 立即存檔</button>
+        <button type="button" class="action-btn btn-grade" id="btn-grade" onclick="gradeCurrentSeason()">✨ 自動批改與給建議</button>
+      </div>
+
+      <div class="loading-box" id="loading-box">⏳ 正在檢查 7 句結構並請秉辰師分身閱讀中，請稍候...</div>
+
+      <div class="feedback-panel" id="feedback-panel">
+        <div class="feedback-header">
+          <h3>🤖 批改結果與修改建議（<span id="feedback-season-name">春天</span>）</h3>
+          <span class="score-pill" id="score-pill">結構檢查：0 / 7 項</span>
+        </div>
+        <div class="checklist-grid" id="checklist-grid"></div>
+        <div class="ai-feedback-box" id="ai-feedback-box"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 整篇預覽 Modal -->
+  <div class="modal-backdrop" id="preview-modal" onclick="if(event.target===this) closePreviewModal()">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="preview-modal-title">✨ 整篇《四季的歌聲》作品預覽</h3>
+        <button type="button" class="mini-btn" onclick="closePreviewModal()">✕ 關閉</button>
+      </div>
+      <div class="poem-full-preview" id="poem-full-preview"></div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px;">
+        <button type="button" class="mini-btn highlight" onclick="copyFullPoem()">📋 複製整首童詩</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/grader.js"></script>
+  <script>
+    const CFG = window.SEASONS_CONFIG;
+    const API_URL = `${CFG.SUPABASE_URL}/functions/v1/${CFG.FUNCTION_NAME}`;
+
+    let currentTab = "p1";
+    let currentSeat = "";
+    let drafts = { p1: "", p2: "", p3: "", p4: "" };
+    let feedbackMap = {};
+    let ruleReportMap = {};
+    let autoSaveTimer = null;
+    let isLoadingStudent = false;
+    let isGrading = false;
+    let isOnline = true;
+
+    const seatSelect = document.getElementById("student-seat");
+    const draftTextarea = document.getElementById("draft-textarea");
+    const saveStatusEl = document.getElementById("save-status");
+    const lineCounterEl = document.getElementById("line-counter");
+    const cloudStatusEl = document.getElementById("cloud-status");
+    const loadingBox = document.getElementById("loading-box");
+    const feedbackPanel = document.getElementById("feedback-panel");
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function renderSafeMarkdown(mdText) {
+      const safe = escapeHtml(mdText);
+      return window.marked ? window.marked.parse(safe) : safe.replace(/\n/g, "<br>");
+    }
+
+    function initSeatDropdown() {
+      seatSelect.innerHTML = '<option value="">-- 點我選擇座號（1～29 號）--</option>';
+      for (let i = 1; i <= CFG.SEAT_COUNT; i++) {
+        const opt = document.createElement("option");
+        opt.value = String(i);
+        opt.textContent = `${i} 號`;
+        seatSelect.appendChild(opt);
+      }
+    }
+
+    async function callEdgeApi(payload) {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": CFG.SUPABASE_PUBLISHABLE_KEY
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || `HTTP ${res.status}`);
+      }
+      return data;
+    }
+
+    function setCloudOnline(online, msg) {
+      isOnline = online;
+      if (online) {
+        cloudStatusEl.className = "status-pill";
+        cloudStatusEl.textContent = msg || "🟢 雲端連線就緒（Supabase 即時同步）";
+      } else {
+        cloudStatusEl.className = "status-pill offline";
+        cloudStatusEl.textContent = msg || "🟡 離線／本機保護模式（草稿暫存平板，連線後自動同步）";
+      }
+    }
+
+    function updateTabBadges() {
+      ["p1", "p2", "p3", "p4"].forEach((key) => {
+        const badge = document.getElementById(`badge-${key}`);
+        const txt = (drafts[key] || "").trim();
+        const rep = ruleReportMap[key];
+        if (!txt) {
+          badge.className = "tab-badge";
+          badge.textContent = "未寫";
+        } else if (rep && rep.score === 7) {
+          badge.className = "tab-badge done";
+          badge.textContent = "7/7 🌟";
+        } else if (rep) {
+          badge.className = "tab-badge draft";
+          badge.textContent = `${rep.score}/7 ✏️`;
+        } else {
+          badge.className = "tab-badge draft";
+          badge.textContent = "草稿中";
+        }
+      });
+    }
+
+    function updateCounter() {
+      const val = draftTextarea.value || "";
+      const nonEmptyLines = val.split(/\r?\n/).filter((l) => l.trim().length > 0).length;
+      const charCount = val.replace(/\s+/g, "").length;
+      lineCounterEl.textContent = `目前 ${nonEmptyLines} 行 / ${charCount} 字`;
+    }
+
+    function renderSeasonPanel() {
+      const meta = CFG.SEASONS[currentTab];
+      document.documentElement.style.setProperty("--season-color", meta.color);
+      document.documentElement.style.setProperty("--season-soft", meta.bgSoft);
+
+      document.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.tab === currentTab);
+      });
+
+      document.getElementById("season-title").textContent = `${meta.tabLabel.replace("：", "・")}的歌聲`;
+      document.getElementById("season-mood").textContent = `心情：${meta.mood}`;
+
+      // 聲音點選卡
+      const soundGrid = document.getElementById("sound-grid");
+      const currentText = drafts[currentTab] || "";
+      soundGrid.innerHTML = meta.sounds
+        .map((s) => {
+          const isSelected = currentText.includes(s.word);
+          return `
+            <button type="button" class="sound-chip ${isSelected ? "selected" : ""}" onclick="pickSound('${escapeHtml(s.word)}')">
+              <span class="sound-word">${escapeHtml(s.word)}</span>
+              <span class="sound-zhuyin">${escapeHtml(s.zhuyin)}</span>
+              <span class="sound-desc">${escapeHtml(s.desc)}</span>
+            </button>
+          `;
+        })
+        .join("");
+
+      // 主角靈感
+      document.getElementById("hero-list").innerHTML = meta.heroIdeas
+        .map((h) => `<span class="hero-tag">💡 ${escapeHtml(h)}</span>`)
+        .join("") + '<span class="hero-tag">✨ 或自己想「誰＋做什麼」</span>';
+
+      const warnEl = document.getElementById("season-warning");
+      if (meta.warningNote) {
+        warnEl.style.display = "block";
+        warnEl.textContent = meta.warningNote;
+      } else {
+        warnEl.style.display = "none";
+      }
+
+      // 7 句結構公式
+      document.getElementById("formula-list").innerHTML = `
+        <li><span class="line-num">第 1 句</span><span class="formula-code">${meta.name}的歌聲從哪裡來？</span></li>
+        <li><span class="line-num">第 2 句</span><span class="formula-code">歌聲乘著（${meta.wind}）而來，</span></li>
+        <li><span class="line-num">第 3 句</span><span class="formula-code">（聲音寫 3 次或 4 個字）——</span></li>
+        <li><span class="line-num">第 4 句</span><span class="formula-code">${meta.name}的歌聲是（誰）＋（在做什麼），</span></li>
+        <li><span class="line-num">第 5 句</span><span class="formula-code">（動詞）過（地點一），（動詞）過（地點二），</span> <span>※「過」可換成進、上、到</span></li>
+        <li><span class="line-num">第 6 句</span><span class="formula-code">帶著（數量＋物品），</span> 或 <span class="formula-code">像（誰）在（做什麼），</span></li>
+        <li><span class="line-num">第 7 句</span><span class="formula-code">① 對（誰）說：「…」</span> / <span class="formula-code">② 嚇得、逗得（誰）…</span> / <span class="formula-code">③ 把（心情）送進（哪裡）。</span></li>
+      `;
+
+      // 示範詩（預設收起）
+      document.getElementById("example-details").open = false;
+      document.getElementById("example-poem").textContent = meta.exampleLines.join("\n");
+      document.getElementById("example-tip").textContent = `💡 寫作巧思：${meta.exampleTip}`;
+
+      // 草稿框
+      draftTextarea.value = drafts[currentTab] || "";
+      updateCounter();
+      renderFeedbackPanel();
+      updateTabBadges();
+    }
+
+    function renderFeedbackPanel() {
+      const meta = CFG.SEASONS[currentTab];
+      const report = ruleReportMap[currentTab];
+      const fbText = feedbackMap[currentTab];
+
+      if (!report && !fbText) {
+        feedbackPanel.classList.remove("show");
+        return;
+      }
+
+      feedbackPanel.classList.add("show");
+      document.getElementById("feedback-season-name").textContent = meta.name;
+
+      if (report) {
+        document.getElementById("score-pill").textContent = `結構健檢：${report.score} / ${report.total} 項`;
+        document.getElementById("checklist-grid").innerHTML = report.checks
+          .map((c) => `
+            <div class="check-item ${c.passed ? "ok" : "miss"}">
+              <div class="check-title">${c.passed ? "✅" : "✏️"} ${escapeHtml(c.label)}</div>
+              <div class="check-tip">${escapeHtml(c.tip)}</div>
+            </div>
+          `)
+          .join("");
+      } else {
+        document.getElementById("score-pill").textContent = "已儲存建議";
+        document.getElementById("checklist-grid").innerHTML = "";
+      }
+
+      const aiBox = document.getElementById("ai-feedback-box");
+      if (fbText) {
+        aiBox.innerHTML = renderSafeMarkdown(fbText);
+      } else if (report) {
+        aiBox.innerHTML = renderSafeMarkdown(window.SeasonsGrader.buildOfflineFeedbackMarkdown(currentTab, report, ""));
+      }
+    }
+
+    function pickSound(soundWord) {
+      if (!currentSeat) {
+        alert("請先在上方選擇你的座號（1～29 號）喔！");
+        return;
+      }
+      const cur = draftTextarea.value.trim();
+      if (!cur) {
+        draftTextarea.value = window.SeasonsGrader.buildSkeleton(currentTab, soundWord);
+      } else {
+        const lines = draftTextarea.value.split(/\r?\n/);
+        if (lines.length >= 3) {
+          lines[2] = `（${soundWord}）——`;
+          draftTextarea.value = lines.join("\n");
+        } else {
+          draftTextarea.value = `${draftTextarea.value}\n（${soundWord}）——`;
+        }
+      }
+      onDraftChanged(true);
+    }
+
+    function insertSkeleton() {
+      if (!currentSeat) {
+        alert("請先選擇你的座號（1～29 號）喔！");
+        return;
+      }
+      if (draftTextarea.value.trim() && !confirm("草稿區已經有文字了，確定要重設成空白 7 句骨架嗎？")) {
+        return;
+      }
+      draftTextarea.value = window.SeasonsGrader.buildSkeleton(currentTab, "");
+      onDraftChanged(true);
+    }
+
+    function onDraftChanged(immediateSave = false) {
+      drafts[currentTab] = draftTextarea.value;
+      updateCounter();
+      if (!currentSeat) return;
+
+      // 本地即時先跑規則報告更新分頁小標籤
+      if (drafts[currentTab].trim()) {
+        ruleReportMap[currentTab] = window.SeasonsGrader.grade(currentTab, drafts[currentTab]);
+      } else {
+        delete ruleReportMap[currentTab];
+      }
+      updateTabBadges();
+      saveLocalDraft(currentSeat, drafts);
+
+      if (immediateSave) {
+        saveDraft(false);
+      } else {
+        saveStatusEl.textContent = "✏️ 正在輸入...";
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(() => saveDraft(false), 1200);
+      }
+    }
+
+    function saveLocalDraft(seat, data) {
+      try {
+        localStorage.setItem(
+          CFG.STORAGE_PREFIX + seat,
+          JSON.stringify({ drafts: data, updatedAt: Date.now() })
+        );
+      } catch {}
+    }
+
+    function loadLocalDraft(seat) {
+      try {
+        const raw = localStorage.getItem(CFG.STORAGE_PREFIX + seat);
+        return raw ? JSON.parse(raw) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    async function switchTab(tabKey) {
+      if (currentSeat && !isLoadingStudent) {
+        drafts[currentTab] = draftTextarea.value;
+        saveLocalDraft(currentSeat, drafts);
+        saveDraft(false);
+      }
+      currentTab = tabKey;
+      renderSeasonPanel();
+    }
+
+    seatSelect.addEventListener("change", async () => {
+      clearTimeout(autoSaveTimer);
+      isLoadingStudent = true;
+
+      currentSeat = seatSelect.value;
+      drafts = { p1: "", p2: "", p3: "", p4: "" };
+      feedbackMap = {};
+      ruleReportMap = {};
+      draftTextarea.value = "";
+      renderSeasonPanel();
+
+      if (!currentSeat) {
+        saveStatusEl.textContent = "🟢 請先選擇座號";
+        isLoadingStudent = false;
+        return;
+      }
+
+      saveStatusEl.textContent = `⏳ 正在載入 ${currentSeat} 號作品...`;
+
+      // 1. 先載入本機暫存（零延遲）
+      const local = loadLocalDraft(currentSeat);
+      if (local && local.drafts) {
+        drafts = { ...drafts, ...local.drafts };
+        ["p1", "p2", "p3", "p4"].forEach((k) => {
+          if (drafts[k] && drafts[k].trim()) {
+            ruleReportMap[k] = window.SeasonsGrader.grade(k, drafts[k]);
+          }
+        });
+        renderSeasonPanel();
+      }
+
+      // 2. 向 Supabase Edge Function 同步最新雲端資料
+      try {
+        const res = await callEdgeApi({ action: "load", seat: Number(currentSeat) });
+        setCloudOnline(true);
+        const remote = res.content || {};
+        ["p1", "p2", "p3", "p4"].forEach((k) => {
+          if (remote[k] && remote[k].trim().length > 0) {
+            drafts[k] = remote[k];
+          }
+        });
+        feedbackMap = res.feedback || {};
+        ruleReportMap = res.rule_reports || ruleReportMap;
+        ["p1", "p2", "p3", "p4"].forEach((k) => {
+          if (drafts[k] && drafts[k].trim() && !ruleReportMap[k]) {
+            ruleReportMap[k] = window.SeasonsGrader.grade(k, drafts[k]);
+          }
+        });
+        saveLocalDraft(currentSeat, drafts);
+        renderSeasonPanel();
+        saveStatusEl.textContent = `✅ 已載入 ${currentSeat} 號草稿`;
+      } catch (err) {
+        console.warn("雲端載入失敗，暫用本機資料：", err);
+        setCloudOnline(false);
+        saveStatusEl.textContent = `💾 已載入本機暫存（${currentSeat} 號）`;
+      } finally {
+        isLoadingStudent = false;
+      }
+    });
+
+    async function saveDraft(showAlert = false) {
+      if (isLoadingStudent || !currentSeat) {
+        if (showAlert && !currentSeat) alert("請先選擇你的座號（1～29 號）！");
+        return;
+      }
+      drafts[currentTab] = draftTextarea.value;
+      saveLocalDraft(currentSeat, drafts);
+      saveStatusEl.textContent = "⏳ 儲存中...";
+
+      try {
+        const res = await callEdgeApi({
+          action: "save",
+          seat: Number(currentSeat),
+          content: drafts,
+          active_tab: currentTab
+        });
+        setCloudOnline(true);
+        if (res.rule_reports) ruleReportMap = res.rule_reports;
+        updateTabBadges();
+        const t = new Date().toLocaleTimeString("zh-TW", { hour12: false });
+        saveStatusEl.textContent = `✅ 已同步雲端 (${t})`;
+        if (showAlert) alert("✅ 儲存成功！已同步到教師雲端後台。");
+      } catch (err) {
+        setCloudOnline(false);
+        const t = new Date().toLocaleTimeString("zh-TW", { hour12: false });
+        saveStatusEl.textContent = `💾 已安全存於平板 (${t})`;
+        if (showAlert) alert("💾 目前雲端尚未連線，已安全暫存在這台平板上！");
+      }
+    }
+
+    async function gradeCurrentSeason() {
+      if (!currentSeat) {
+        alert("請先在上方選擇你的座號（1～29 號）！");
+        return;
+      }
+      if (isGrading) return;
+
+      drafts[currentTab] = draftTextarea.value;
+      if (!drafts[currentTab].trim()) {
+        alert("這一段還是空的喔！先點「🪄 填入 7 句空白骨架」寫好再批改吧！");
+        return;
+      }
+
+      isGrading = true;
+      const btn = document.getElementById("btn-grade");
+      btn.disabled = true;
+      loadingBox.style.display = "block";
+
+      // 1. 立刻算本地結構檢查，保證畫面零等待
+      const localReport = window.SeasonsGrader.grade(currentTab, drafts[currentTab]);
+      ruleReportMap[currentTab] = localReport;
+      saveLocalDraft(currentSeat, drafts);
+
+      try {
+        const res = await callEdgeApi({
+          action: "grade",
+          seat: Number(currentSeat),
+          season: currentTab,
+          content: drafts
+        });
+        setCloudOnline(true);
+        if (res.rule_report) ruleReportMap[currentTab] = res.rule_report;
+        if (res.feedback) feedbackMap = res.feedback;
+        if (res.feedback_text) feedbackMap[currentTab] = res.feedback_text;
+
+        const t = new Date().toLocaleTimeString("zh-TW", { hour12: false });
+        saveStatusEl.textContent = `✅ 批改與存檔完成 (${t})`;
+        renderSeasonPanel();
+        feedbackPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      } catch (err) {
+        setCloudOnline(false);
+        feedbackMap[currentTab] = window.SeasonsGrader.buildOfflineFeedbackMarkdown(
+          currentTab,
+          localReport,
+          "（目前雲端服務尚未連線，先為你顯示即時 7 句結構健檢！待連線後可再點一次進行 AI 錯字細批。）"
+        );
+        renderSeasonPanel();
+        feedbackPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      } finally {
+        loadingBox.style.display = "none";
+        btn.disabled = false;
+        isGrading = false;
+      }
+    }
+
+    function openPreviewModal() {
+      drafts[currentTab] = draftTextarea.value;
+      const order = ["p1", "p2", "p3", "p4"];
+      const combined = order
+        .map((k) => {
+          const name = CFG.SEASONS[k].name;
+          const body = (drafts[k] || "").trim() || `（${name}尚未填寫）`;
+          return body;
+        })
+        .join("\n\n");
+      document.getElementById("preview-modal-title").textContent = currentSeat
+        ? `✨ ${currentSeat} 號的《四季的歌聲》完整作品`
+        : "✨ 《四季的歌聲》作品預覽";
+      document.getElementById("poem-full-preview").textContent = combined;
+      document.getElementById("preview-modal").classList.add("open");
+    }
+
+    function closePreviewModal() {
+      document.getElementById("preview-modal").classList.remove("open");
+    }
+
+    async function copyFullPoem() {
+      const text = document.getElementById("poem-full-preview").textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+        alert("📋 已複製整首《四季的歌聲》！");
+      } catch {
+        alert("請直接長按或框選上方文字複製喔！");
+      }
+    }
+
+    // 綁定輸入、離焦、背景同步事件
+    draftTextarea.addEventListener("input", () => onDraftChanged(false));
+    draftTextarea.addEventListener("blur", () => {
+      if (currentSeat) saveDraft(false);
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden" && currentSeat) {
+        saveDraft(false);
+      }
+    });
+    setInterval(() => {
+      if (currentSeat && !isLoadingStudent) saveDraft(false);
+    }, 20000);
+
+    window.addEventListener("DOMContentLoaded", () => {
+      initSeatDropdown();
+      renderSeasonPanel();
+    });
+  </script>
+</body>
+</html>

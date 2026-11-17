@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>教師管理後台 - 第八課《四季的歌聲》</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #cbd5e1;
+      --primary: #0f766e;
+      --blue: #1e40af;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 50px;
+    }
+
+    header {
+      background: #0f766e;
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.14);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .brand h1 { font-size: 1.35rem; font-weight: 900; }
+    .ai-badge {
+      background: rgba(255, 255, 255, 0.18);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+    .hdr-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .hdr-btn {
+      padding: 7px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.92rem;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .hdr-btn:hover { background: rgba(255, 255, 255, 0.24); }
+
+    main { max-width: 1440px; margin: 22px auto; padding: 0 18px; }
+
+    /* 登入盒 */
+    .login-card {
+      max-width: 440px;
+      margin: 60px auto;
+      background: #fff;
+      border-radius: 18px;
+      padding: 32px 28px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.1);
+      border: 1.5px solid #cbd5e1;
+      text-align: center;
+    }
+    .login-card h2 { font-size: 1.6rem; font-weight: 900; color: #0f766e; margin-bottom: 8px; }
+    .login-card p { color: var(--muted); font-size: 0.95rem; margin-bottom: 20px; }
+    .login-card input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 1.05rem;
+      margin-bottom: 14px;
+    }
+    .login-card input:focus { outline: none; border-color: var(--primary); }
+    .login-card button {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      background: #0f766e;
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .login-card button:hover { background: #115e59; }
+    .err-msg { color: #dc2626; font-weight: 800; margin-top: 10px; font-size: 0.92rem; }
+
+    /* 統計卡 */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .stat-card {
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 14px 16px;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+    }
+    .stat-label { font-size: 0.88rem; color: var(--muted); font-weight: 700; }
+    .stat-value { font-size: 1.65rem; font-weight: 900; color: #0f172a; margin-top: 2px; }
+
+    /* 工具列 */
+    .toolbar {
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .filter-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .filter-btn {
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1.5px solid #cbd5e1;
+      background: #f8fafc;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: #334155;
+    }
+    .filter-btn.active { background: #0f766e; color: #fff; border-color: #0f766e; }
+    .search-seat {
+      padding: 7px 12px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      width: 140px;
+    }
+    .export-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .btn-export {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: none;
+      background: #10b981;
+      color: #fff;
+      font-weight: 900;
+      font-size: 0.92rem;
+      cursor: pointer;
+    }
+    .btn-export:hover { background: #059669; }
+    .btn-refresh {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1.5px solid #94a3b8;
+      background: #fff;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* 資料表 */
+    .table-wrap {
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      overflow-x: auto;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 980px; }
+    th, td { padding: 12px 12px; border-bottom: 1px solid #e2e8f0; text-align: left; vertical-align: top; }
+    th {
+      background: #1e293b;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.92rem;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    tr:hover { background: #f8fafc; }
+    .seat-pill {
+      display: inline-block;
+      background: #f59e0b;
+      color: #fff;
+      font-weight: 900;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      white-space: nowrap;
+    }
+    .cell-score {
+      display: inline-block;
+      font-size: 0.76rem;
+      font-weight: 900;
+      padding: 2px 7px;
+      border-radius: 999px;
+      margin-bottom: 4px;
+    }
+    .score-ok { background: #dcfce7; color: #15803d; }
+    .score-mid { background: #fef3c7; color: #b45309; }
+    .score-empty { background: #f1f5f9; color: #94a3b8; }
+    .cell-preview {
+      font-size: 0.86rem;
+      color: #334155;
+      line-height: 1.45;
+      white-space: pre-line;
+      max-height: 85px;
+      overflow: hidden;
+    }
+    .btn-row {
+      padding: 5px 9px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      font-size: 0.82rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+      margin-bottom: 5px;
+    }
+    .btn-row:hover { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; }
+    .btn-row.danger:hover { background: #fef2f2; border-color: #fca5a5; color: #dc2626; }
+
+    /* 詳情 Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.58);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 999;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-card {
+      background: #fff;
+      width: 100%;
+      max-width: 920px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border-radius: 16px;
+      padding: 22px 24px;
+      box-shadow: 0 20px 44px rgba(0, 0, 0, 0.25);
+    }
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+    }
+    .season-detail-card {
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      background: #f8fafc;
+    }
+    .season-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 8px;
+    }
+    .detail-box {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.92rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+    @media (max-width: 760px) {
+      .season-detail-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>👨‍🏫 教師後台：第八課《四季的歌聲》</h1>
+      <span class="ai-badge" id="ai-status-pill" style="display:none;">檢測 AI 狀態中...</span>
+    </div>
+    <div class="hdr-actions">
+      <a href="index.html" class="hdr-btn">📝 返回學生寫作頁</a>
+      <button type="button" class="hdr-btn" id="btn-logout" style="display:none;" onclick="logout()">登出</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- 登入區 -->
+    <section id="sec-login" class="login-card">
+      <h2>教師身分驗證</h2>
+      <p>請輸入與班級測驗後台相同的教師密碼，即可檢視 1～29 號全班寫作進度與批改建議。</p>
+      <form onsubmit="handleLogin(event)">
+        <input type="password" id="input-pw" placeholder="請輸入教師密碼" required autofocus>
+        <button type="submit" id="btn-login">登入管理後台</button>
+      </form>
+      <div class="err-msg" id="login-err"></div>
+    </section>
+
+    <!-- 儀表板 -->
+    <section id="sec-dashboard" style="display:none;">
+      <div class="stats-grid" id="stats-grid"></div>
+
+      <div class="toolbar">
+        <div class="filter-group">
+          <button type="button" class="filter-btn active" data-filter="all" onclick="setFilter('all')">全部 (29)</button>
+          <button type="button" class="filter-btn" data-filter="complete" onclick="setFilter('complete')">四段已完成</button>
+          <button type="button" class="filter-btn" data-filter="working" onclick="setFilter('working')">寫作中</button>
+          <button type="button" class="filter-btn" data-filter="empty" onclick="setFilter('empty')">尚未動筆</button>
+          <input type="number" min="1" max="29" class="search-seat" id="search-seat" placeholder="搜尋座號 (1~29)" oninput="renderTable()">
+        </div>
+        <div class="export-group">
+          <label style="font-size:0.88rem;font-weight:700;display:flex;align-items:center;gap:4px;cursor:pointer;">
+            <input type="checkbox" id="chk-auto" checked> 每 10 秒自動更新
+          </label>
+          <span id="last-sync-txt" style="font-size:0.82rem;color:#64748b;"></span>
+          <button type="button" class="btn-refresh" onclick="fetchAllStudents()">🔄 立即刷新</button>
+          <button type="button" class="btn-export" onclick="exportExcel()">📥 下載全班 Excel</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:7%;">座號</th>
+              <th style="width:20%;">🌸 第一段：春天</th>
+              <th style="width:20%;">☀️ 第二段：夏天</th>
+              <th style="width:20%;">🍂 第三段：秋天</th>
+              <th style="width:20%;">❄️ 第四段：冬天</th>
+              <th style="width:13%;">更新與操作</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-students"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- 單一學生詳情 Modal -->
+  <div class="modal-backdrop" id="detail-modal" onclick="if(event.target===this) closeDetailModal()">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="detail-title">座號詳情</h2>
+        <div style="display:flex;gap:8px;">
+          <button type="button" class="btn-refresh" onclick="copyStudentFullPoem()">📋 複製整首</button>
+          <button type="button" class="btn-refresh" onclick="closeDetailModal()">✕ 關閉</button>
+        </div>
+      </div>
+      <div id="detail-body"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="js/config.js"></script>
+  <script>
+    const CFG = window.SEASONS_CONFIG;
+    const API_URL = `${CFG.SUPABASE_URL}/functions/v1/${CFG.FUNCTION_NAME}`;
+
+    let teacherPw = "";
+    let studentsData = [];
+    let currentFilter = "all";
+    let refreshTimer = null;
+    let currentDetailStudent = null;
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function renderSafeMarkdown(mdText) {
+      const safe = escapeHtml(mdText);
+      return window.marked ? window.marked.parse(safe) : safe.replace(/\n/g, "<br>");
+    }
+
+    async function callEdgeApi(payload) {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": CFG.SUPABASE_PUBLISHABLE_KEY
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      return data;
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const pw = document.getElementById("input-pw").value;
+      const btn = document.getElementById("btn-login");
+      const errEl = document.getElementById("login-err");
+      errEl.textContent = "";
+      btn.disabled = true;
+      btn.textContent = "驗證中...";
+
+      try {
+        const res = await callEdgeApi({ action: "teacher_list", pw });
+        teacherPw = pw;
+        studentsData = res.students || [];
+        updateAiStatusBadge(res.ai_configured);
+
+        document.getElementById("sec-login").style.display = "none";
+        document.getElementById("sec-dashboard").style.display = "block";
+        document.getElementById("btn-logout").style.display = "inline-block";
+        document.getElementById("ai-status-pill").style.display = "inline-block";
+
+        renderAll();
+        startAutoRefresh();
+      } catch (err) {
+        errEl.textContent = err.message === "unauthorized"
+          ? "❌ 教師密碼錯誤，請重新輸入！"
+          : `⚠️ 無法連線後端服務（${err.message}）。請確認 Supabase 資料表與 Edge Function 已部署。`;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "登入管理後台";
+      }
+    }
+
+    function updateAiStatusBadge(configured) {
+      const pill = document.getElementById("ai-status-pill");
+      pill.textContent = configured
+        ? "🤖 AI 秉辰師引擎已啟用"
+        : "📐 結構規則引擎模式（尚未設定 GEMINI_API_KEY）";
+    }
+
+    function logout() {
+      teacherPw = "";
+      studentsData = [];
+      clearInterval(refreshTimer);
+      document.getElementById("input-pw").value = "";
+      document.getElementById("sec-login").style.display = "block";
+      document.getElementById("sec-dashboard").style.display = "none";
+      document.getElementById("btn-logout").style.display = "none";
+      document.getElementById("ai-status-pill").style.display = "none";
+    }
+
+    async function fetchAllStudents() {
+      if (!teacherPw) return;
+      try {
+        const res = await callEdgeApi({ action: "teacher_list", pw: teacherPw });
+        studentsData = res.students || [];
+        updateAiStatusBadge(res.ai_configured);
+        renderAll();
+        document.getElementById("last-sync-txt").textContent =
+          `最後更新 ${new Date().toLocaleTimeString("zh-TW", { hour12: false })}`;
+      } catch (err) {
+        console.warn("更新失敗:", err);
+      }
+    }
+
+    function startAutoRefresh() {
+      clearInterval(refreshTimer);
+      refreshTimer = setInterval(() => {
+        if (document.getElementById("chk-auto").checked && !document.hidden) {
+          fetchAllStudents();
+        }
+      }, 10000);
+    }
+
+    function getStudentStage(s) {
+      const filledCount = ["p1", "p2", "p3", "p4"].filter((k) => (s[k] || "").trim().length > 0).length;
+      if (filledCount === 0) return "empty";
+      if (filledCount === 4) return "complete";
+      return "working";
+    }
+
+    function renderAll() {
+      renderStats();
+      renderTable();
+    }
+
+    function renderStats() {
+      const started = studentsData.filter((s) => getStudentStage(s) !== "empty").length;
+      const completedAll = studentsData.filter((s) => getStudentStage(s) === "complete").length;
+      const seasonCounts = ["p1", "p2", "p3", "p4"].map(
+        (k) => studentsData.filter((s) => (s[k] || "").trim().length > 0).length
+      );
+
+      let totalScores = 0;
+      let gradedSegments = 0;
+      studentsData.forEach((s) => {
+        ["p1", "p2", "p3", "p4"].forEach((k) => {
+          const rep = s.rule_reports?.[k];
+          if (rep && typeof rep.score === "number" && (s[k] || "").trim()) {
+            totalScores += rep.score;
+            gradedSegments += 1;
+          }
+        });
+      });
+      const avgPct = gradedSegments > 0 ? Math.round((totalScores / (gradedSegments * 7)) * 100) : 0;
+
+      document.getElementById("stats-grid").innerHTML = `
+        <div class="stat-card"><div class="stat-label">已開始寫作</div><div class="stat-value">${started} / 29 人</div></div>
+        <div class="stat-card"><div class="stat-label">四段皆完成</div><div class="stat-value">${completedAll} / 29 人</div></div>
+        <div class="stat-card"><div class="stat-label">各季完成數（春/夏/秋/冬）</div><div class="stat-value" style="font-size:1.35rem;">${seasonCounts.join(" / ")}</div></div>
+        <div class="stat-card"><div class="stat-label">平均 7 句結構完成率</div><div class="stat-value">${avgPct}%</div></div>
+      `;
+    }
+
+    function setFilter(f) {
+      currentFilter = f;
+      document.querySelectorAll(".filter-btn").forEach((b) => {
+        b.classList.toggle("active", b.dataset.filter === f);
+      });
+      renderTable();
+    }
+
+    function renderSeasonCell(s, key) {
+      const text = (s[key] || "").trim();
+      if (!text) {
+        return `<span class="cell-score score-empty">尚未填寫</span>`;
+      }
+      const rep = s.rule_reports?.[key];
+      const hasFb = Boolean((s.feedback?.[key] || "").trim());
+      let scoreHtml = "";
+      if (rep) {
+        const cls = rep.score === 7 ? "score-ok" : "score-mid";
+        scoreHtml = `<span class="cell-score ${cls}">${rep.score}/7 項 ${hasFb ? "🤖" : ""}</span>`;
+      } else {
+        scoreHtml = `<span class="cell-score score-mid">已存草稿</span>`;
+      }
+      const preview = text.length > 75 ? text.slice(0, 75) + "..." : text;
+      return `${scoreHtml}<div class="cell-preview">${escapeHtml(preview)}</div>`;
+    }
+
+    function renderTable() {
+      const querySeat = document.getElementById("search-seat").value.trim();
+      const filtered = studentsData.filter((s) => {
+        if (querySeat && String(s.seat) !== querySeat) return false;
+        if (currentFilter === "all") return true;
+        return getStudentStage(s) === currentFilter;
+      });
+
+      const tbody = document.getElementById("tbody-students");
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:28px;color:#64748b;">沒有符合條件的學生資料。</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered
+        .map((s) => {
+          const timeText = s.updated_at
+            ? new Date(s.updated_at).toLocaleString("zh-TW", { hour12: false, month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })
+            : "尚未存檔";
+          return `
+            <tr>
+              <td><span class="seat-pill">${s.seat} 號</span></td>
+              <td>${renderSeasonCell(s, "p1")}</td>
+              <td>${renderSeasonCell(s, "p2")}</td>
+              <td>${renderSeasonCell(s, "p3")}</td>
+              <td>${renderSeasonCell(s, "p4")}</td>
+              <td>
+                <div style="font-size:0.78rem;color:#64748b;margin-bottom:6px;">${escapeHtml(timeText)}</div>
+                <button type="button" class="btn-row" onclick="openDetail(${s.seat})">🔍 詳情與建議</button>
+                <button type="button" class="btn-row danger" onclick="clearSeat(${s.seat})">🗑️ 清空此號</button>
+              </td>
+            </tr>
+          `;
+        })
+        .join("");
+    }
+
+    function openDetail(seat) {
+      const s = studentsData.find((item) => item.seat === seat);
+      if (!s) return;
+      currentDetailStudent = s;
+      document.getElementById("detail-title").textContent = `📖 ${seat} 號《四季的歌聲》完整作答與批改`;
+
+      const html = ["p1", "p2", "p3", "p4"]
+        .map((key) => {
+          const meta = CFG.SEASONS[key];
+          const text = (s[key] || "").trim() || "（尚未填寫）";
+          const fb = (s.feedback?.[key] || "").trim();
+          const rep = s.rule_reports?.[key];
+          const repHtml = rep
+            ? `<div style="margin-bottom:8px;font-weight:800;color:#0f766e;">結構健檢：${rep.score}/7 項</div>` +
+              rep.checks.map((c) => `<div>${c.passed ? "✅" : "✏️"} <b>${escapeHtml(c.label)}</b>：${escapeHtml(c.tip)}</div>`).join("")
+            : "<div>尚無結構檢查紀錄</div>";
+
+          return `
+            <div class="season-detail-card">
+              <strong style="font-size:1.05rem;">${escapeHtml(meta.tabLabel)}</strong>
+              <div class="season-detail-grid">
+                <div>
+                  <div style="font-size:0.84rem;font-weight:800;color:#475569;margin-bottom:4px;">學生作品內容</div>
+                  <div class="detail-box">${escapeHtml(text)}</div>
+                </div>
+                <div>
+                  <div style="font-size:0.84rem;font-weight:800;color:#475569;margin-bottom:4px;">結構檢核與批改建議</div>
+                  <div class="detail-box">${fb ? renderSafeMarkdown(fb) : repHtml}</div>
+                </div>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+
+      document.getElementById("detail-body").innerHTML = html;
+      document.getElementById("detail-modal").classList.add("open");
+    }
+
+    function closeDetailModal() {
+      document.getElementById("detail-modal").classList.remove("open");
+      currentDetailStudent = null;
+    }
+
+    async function copyStudentFullPoem() {
+      if (!currentDetailStudent) return;
+      const text = ["p1", "p2", "p3", "p4"]
+        .map((k) => (currentDetailStudent[k] || "").trim() || `（${CFG.SEASONS[k].name}尚未填寫）`)
+        .join("\n\n");
+      try {
+        await navigator.clipboard.writeText(text);
+        alert(`📋 已複製 ${currentDetailStudent.seat} 號的四段作品！`);
+      } catch {
+        alert("複製失敗，請手動框選複製。");
+      }
+    }
+
+    async function clearSeat(seat) {
+      if (!confirm(`確定要清空 ${seat} 號的所有草稿與批改紀錄嗎？此動作無法復原。`)) return;
+      try {
+        await callEdgeApi({ action: "teacher_clear", pw: teacherPw, seat });
+        await fetchAllStudents();
+      } catch (err) {
+        alert("清空失敗：" + err.message);
+      }
+    }
+
+    function exportExcel() {
+      const rows = studentsData.map((s) => ({
+        "座號": `${s.seat} 號`,
+        "第一段_春天": s.p1 || "",
+        "春天結構得分": s.rule_reports?.p1 ? `${s.rule_reports.p1.score}/7` : "",
+        "第二段_夏天": s.p2 || "",
+        "夏天結構得分": s.rule_reports?.p2 ? `${s.rule_reports.p2.score}/7` : "",
+        "第三段_秋天": s.p3 || "",
+        "秋天結構得分": s.rule_reports?.p3 ? `${s.rule_reports.p3.score}/7` : "",
+        "第四段_冬天": s.p4 || "",
+        "冬天結構得分": s.rule_reports?.p4 ? `${s.rule_reports.p4.score}/7` : "",
+        "最後更新": s.updated_at ? new Date(s.updated_at).toLocaleString("zh-TW", { hour12: false }) : ""
+      }));
+
+      if (window.XLSX) {
+        const ws = window.XLSX.utils.json_to_sheet(rows);
+        const wb = window.XLSX.utils.book_new();
+        window.XLSX.utils.book_append_sheet(wb, ws, "四季的歌聲全班作品");
+        window.XLSX.writeFile(wb, "402_第八課_四季的歌聲_全班作文.xlsx");
+        return;
+      }
+
+      // Fallback CSV (UTF-8 BOM)
+      const headers = Object.keys(rows[0] || {});
+      const csvLines = [
+        headers.join(","),
+        ...rows.map((r) => headers.map((h) => `"${String(r[h]).replace(/"/g, '""')}"`).join(","))
+      ];
+      const blob = new Blob(["\uFEFF" + csvLines.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "402_第八課_四季的歌聲_全班作文.csv";
+      a.click();
+    }
+  </script>
+</body>
+</html>
