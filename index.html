@@ -716,6 +716,9 @@
     let isLoadingStudent = false;
     let isGrading = false;
     let isOnline = true;
+    let lastAiGradedText = {};
+    let cooldownTimer = null;
+    let cooldownUntil = 0;
 
     const seatSelect = document.getElementById("student-seat");
     const draftTextarea = document.getElementById("draft-textarea");
@@ -992,9 +995,16 @@
       isLoadingStudent = true;
 
       currentSeat = seatSelect.value;
+      clearInterval(cooldownTimer);
+      const gradeBtnEl = document.getElementById("btn-grade");
+      if (gradeBtnEl) {
+        gradeBtnEl.disabled = false;
+        gradeBtnEl.textContent = "✨ 自動批改與給建議";
+      }
       drafts = { p1: "", p2: "", p3: "", p4: "" };
       feedbackMap = {};
       ruleReportMap = {};
+      lastAiGradedText = {};
       draftTextarea.value = "";
       renderSeasonPanel();
 
@@ -1077,6 +1087,25 @@
       }
     }
 
+    function startGradeCooldown(seconds = 12) {
+      const btn = document.getElementById("btn-grade");
+      cooldownUntil = Date.now() + seconds * 1000;
+      clearInterval(cooldownTimer);
+      const tick = () => {
+        const left = Math.ceil((cooldownUntil - Date.now()) / 1000);
+        if (left <= 0) {
+          clearInterval(cooldownTimer);
+          btn.disabled = false;
+          btn.textContent = "✨ 自動批改與給建議";
+        } else {
+          btn.disabled = true;
+          btn.textContent = `⏳ 先看建議修改（${left} 秒後可再批改）`;
+        }
+      };
+      tick();
+      cooldownTimer = setInterval(tick, 500);
+    }
+
     async function gradeCurrentSeason() {
       if (!currentSeat) {
         alert("請先在上方選擇你的座號（1～29 號）！");
@@ -1085,8 +1114,40 @@
       if (isGrading) return;
 
       drafts[currentTab] = draftTextarea.value;
-      if (!drafts[currentTab].trim()) {
+      const trimmed = drafts[currentTab].trim();
+      if (!trimmed) {
         alert("這一段還是空的喔！先點「🪄 填入 7 句空白骨架」寫好再批改吧！");
+        return;
+      }
+
+      // 1. 立刻算本地結構檢查，保證畫面零等待
+      const localReport = window.SeasonsGrader.grade(currentTab, drafts[currentTab]);
+      ruleReportMap[currentTab] = localReport;
+      saveLocalDraft(currentSeat, drafts);
+
+      // 不滿 3 行先顯示本地結構引導，不浪費全班 AI 額度
+      const nonEmptyLines = trimmed.split(/\r?\n/).filter((l) => l.trim().length > 0).length;
+      if (nonEmptyLines < 3) {
+        feedbackMap[currentTab] = window.SeasonsGrader.buildOfflineFeedbackMarkdown(
+          currentTab,
+          localReport,
+          "（目前行數太少，先照上面結構寫滿至少 3 行以上，再按一次就能讓 AI 老師幫你看喔！）"
+        );
+        renderSeasonPanel();
+        feedbackPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        return;
+      }
+
+      // 內容與剛批改過的完全一樣，直接展開既有建議
+      if (
+        lastAiGradedText[currentTab] === trimmed &&
+        feedbackMap[currentTab] &&
+        !feedbackMap[currentTab].includes("排隊中") &&
+        !feedbackMap[currentTab].includes("結構規則引擎")
+      ) {
+        renderSeasonPanel();
+        feedbackPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        alert("這段文字你剛才批改過囉！先照著底下的建議改一改，再按一次批改吧。");
         return;
       }
 
@@ -1094,11 +1155,6 @@
       const btn = document.getElementById("btn-grade");
       btn.disabled = true;
       loadingBox.style.display = "block";
-
-      // 1. 立刻算本地結構檢查，保證畫面零等待
-      const localReport = window.SeasonsGrader.grade(currentTab, drafts[currentTab]);
-      ruleReportMap[currentTab] = localReport;
-      saveLocalDraft(currentSeat, drafts);
 
       try {
         const res = await callEdgeApi({
@@ -1111,6 +1167,12 @@
         if (res.rule_report) ruleReportMap[currentTab] = res.rule_report;
         if (res.feedback) feedbackMap = res.feedback;
         if (res.feedback_text) feedbackMap[currentTab] = res.feedback_text;
+        if (res.ai_status === "ok") {
+          lastAiGradedText[currentTab] = trimmed;
+          startGradeCooldown(12);
+        } else {
+          btn.disabled = false;
+        }
 
         const t = new Date().toLocaleTimeString("zh-TW", { hour12: false });
         saveStatusEl.textContent = `✅ 批改與存檔完成 (${t})`;
@@ -1125,9 +1187,9 @@
         );
         renderSeasonPanel();
         feedbackPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        btn.disabled = false;
       } finally {
         loadingBox.style.display = "none";
-        btn.disabled = false;
         isGrading = false;
       }
     }

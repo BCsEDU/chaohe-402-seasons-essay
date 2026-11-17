@@ -275,6 +275,7 @@ function buildRuleFallbackFeedback(season: SeasonKey, report: RuleReport, reason
 
 async function callGeminiFeedback(
   season: SeasonKey,
+  seat: number,
   studentText: string,
   report: RuleReport
 ): Promise<{ text: string | null; status: "ok" | "no_key" | "rate_limited" | "error" }> {
@@ -314,43 +315,62 @@ ${studentText}
 **💡 秉辰師分身的升級示範**：
 （沿用學生自己寫的同一個主角，改寫 1～2 句更生動的第 5～7 句給他仿寫）`;
 
-  const models = [Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash", "gemini-2.5-flash-lite"];
+  const primaryModel = Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash";
+  const secondaryModel = primaryModel === "gemini-2.5-flash-lite" ? "gemini-2.5-flash" : "gemini-2.5-flash-lite";
+  // 依座號單雙數分流雙模型額度池，並依座號分散起始 Key，避免 29 人同時打同一把 Key
+  const models = seat % 2 === 1 ? [primaryModel, secondaryModel] : [secondaryModel, primaryModel];
+  const startKeyIdx = seat % keys.length;
   let sawRateLimit = false;
 
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i];
-    for (const model of models) {
-      try {
-        const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "X-goog-api-key": key,
-            },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: { temperature: 0.5, maxOutputTokens: 500 },
-            }),
-          }
-        );
-
-        if (res.status === 429) {
-          sawRateLimit = true;
-          continue;
+  const tryCall = async (key: string, model: string): Promise<"ok" | "429" | "err"> => {
+    try {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-goog-api-key": key,
+          },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.5, maxOutputTokens: 500 },
+          }),
         }
-        if (!res.ok) {
-          continue;
-        }
-        const data = await res.json();
-        const out = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-        if (out) {
-          return { text: out, status: "ok" };
-        }
-      } catch {
-        continue;
+      );
+      if (res.status === 429) {
+        sawRateLimit = true;
+        return "429";
       }
+      if (!res.ok) return "err";
+      const data = await res.json();
+      const out = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+      if (out) {
+        cachedText = out;
+        return "ok";
+      }
+      return "err";
+    } catch {
+      return "err";
+    }
+  };
+
+  let cachedText = "";
+  for (let offset = 0; offset < keys.length; offset++) {
+    const key = keys[(startKeyIdx + offset) % keys.length];
+    for (const model of models) {
+      const result = await tryCall(key, model);
+      if (result === "ok") return { text: cachedText, status: "ok" };
+    }
+  }
+
+  // 若全部撞 429，做一次短暫隨機退避再重試不同起點
+  if (sawRateLimit) {
+    await new Promise((r) => setTimeout(r, 1200 + Math.floor(Math.random() * 1000)));
+    const retryKey = keys[(startKeyIdx + 1) % keys.length];
+    for (const model of models) {
+      const result = await tryCall(retryKey, model);
+      if (result === "ok") return { text: cachedText, status: "ok" };
     }
   }
 
@@ -512,8 +532,17 @@ Deno.serve(async (req: Request) => {
       if (!targetText.trim()) {
         aiStatus = "empty";
         aiText = report.summary;
+      } else if (
+        existing?.[season]?.trim() === targetText.trim() &&
+        feedbackDict[season] &&
+        !feedbackDict[season].includes("結構規則引擎") &&
+        !feedbackDict[season].includes("排隊中")
+      ) {
+        // 相同內容不重複呼叫 Gemini，直接回傳快取建議
+        aiStatus = "ok";
+        aiText = feedbackDict[season];
       } else {
-        const aiResult = await callGeminiFeedback(season, targetText, report);
+        const aiResult = await callGeminiFeedback(season, seat, targetText, report);
         aiStatus = aiResult.status;
         if (aiResult.text) {
           aiText = aiResult.text;
@@ -524,8 +553,8 @@ Deno.serve(async (req: Request) => {
             report,
             aiResult.status === "rate_limited" ? "rate_limited" : "no_key"
           );
-          // 僅在無金鑰時把結構批改建議存進 feedback 供教師端觀看；429 則不蓋掉既有 AI 建議
-          if (aiResult.status !== "rate_limited" && !feedbackDict[season]) {
+          // 僅在無金鑰時把結構批改建議存進 feedback（可更新舊規則建議）；429 則不蓋掉既有 AI 建議
+          if (aiResult.status !== "rate_limited" && (!feedbackDict[season] || feedbackDict[season].includes("結構規則引擎"))) {
             feedbackDict[season] = aiText;
           }
         }
