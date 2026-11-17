@@ -278,7 +278,7 @@ async function callGeminiFeedback(
   seat: number,
   studentText: string,
   report: RuleReport
-): Promise<{ text: string | null; status: "ok" | "no_key" | "rate_limited" | "error" }> {
+): Promise<{ text: string | null; status: "ok" | "no_key" | "rate_limited" | "error"; modelUsed?: string; primaryModelError?: string }> {
   const keys = getGeminiKeys();
   if (keys.length === 0) {
     return { text: null, status: "no_key" };
@@ -315,23 +315,39 @@ ${studentText}
 **💡 秉辰師分身的升級示範**：
 （沿用學生自己寫的同一個主角，改寫 1～2 句更生動的第 5～7 句給他仿寫）`;
 
-  const primaryModel = Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash";
-  const secondaryModel = primaryModel === "gemini-2.5-flash-lite" ? "gemini-2.5-flash" : "gemini-2.5-flash-lite";
-  // 依座號單雙數分流雙模型額度池，並依座號分散起始 Key，避免 29 人同時打同一把 Key
-  const models = seat % 2 === 1 ? [primaryModel, secondaryModel] : [secondaryModel, primaryModel];
+  const configuredModel = (Deno.env.get("GEMINI_MODEL") || "").trim();
+  const basePool = seat % 2 === 1
+    ? ["gemini-2.5-flash", "gemini-2.5-flash-lite"]
+    : ["gemini-2.5-flash-lite", "gemini-2.5-flash"];
+  const primaryModel = configuredModel || basePool[0];
+  const models = configuredModel
+    ? [configuredModel, ...basePool.filter((m) => m !== configuredModel)]
+    : basePool;
   const startKeyIdx = seat % keys.length;
   let sawRateLimit = false;
+  let cachedText = "";
+  let modelUsed = "";
+  let primaryModelError = "";
+
+  const startTimeMs = Date.now();
+  const DEADLINE_MS = 22000;
+  const skipModels = new Set<string>();
 
   const tryCall = async (key: string, model: string): Promise<"ok" | "429" | "err"> => {
+    if (skipModels.has(model) || Date.now() - startTimeMs >= DEADLINE_MS) return "err";
     try {
       const generationConfig: Record<string, unknown> = {
         temperature: 0.5,
-        maxOutputTokens: 1200,
+        maxOutputTokens: 2048,
       };
       if (model.includes("2.5")) {
+        generationConfig.maxOutputTokens = 1200;
         generationConfig.thinkingConfig = { thinkingBudget: 0 };
+      } else if (model.includes("gemini-4") || model.includes("gemini-3")) {
+        generationConfig.thinkingConfig = { thinkingLevel: "low" };
       }
 
+      const t0 = Date.now();
       const res = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
         {
@@ -344,45 +360,64 @@ ${studentText}
             contents: [{ parts: [{ text: prompt }] }],
             generationConfig,
           }),
+          signal: AbortSignal.timeout(9000),
         }
       );
+      const elapsed = Date.now() - t0;
+      console.log(`Gemini call model=${model} status=${res.status} elapsed=${elapsed}ms`);
+
       if (res.status === 429) {
         sawRateLimit = true;
+        if (model === primaryModel && !primaryModelError) primaryModelError = "HTTP 429";
         return "429";
       }
-      if (!res.ok) return "err";
+      if (!res.ok) {
+        const errBody = await res.text().catch(() => "");
+        console.warn(`Gemini non-OK model=${model} status=${res.status} body=${errBody.slice(0, 200)}`);
+        if (res.status === 400 || res.status === 403 || res.status === 404) {
+          skipModels.add(model);
+        }
+        if (model === primaryModel && !primaryModelError) {
+          primaryModelError = `HTTP ${res.status}: ${errBody.slice(0, 120)}`;
+        }
+        return "err";
+      }
       const data = await res.json();
       const out = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
       if (out) {
         cachedText = out;
+        modelUsed = model;
         return "ok";
       }
       return "err";
-    } catch {
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.warn(`Gemini fetch exception model=${model} err=${msg}`);
+      if (model === primaryModel && !primaryModelError) {
+        primaryModelError = `EXC: ${msg.slice(0, 100)}`;
+      }
       return "err";
     }
   };
 
-  let cachedText = "";
   for (let offset = 0; offset < keys.length; offset++) {
     const key = keys[(startKeyIdx + offset) % keys.length];
     for (const model of models) {
       const result = await tryCall(key, model);
-      if (result === "ok") return { text: cachedText, status: "ok" };
+      if (result === "ok") return { text: cachedText, status: "ok", modelUsed, primaryModelError: primaryModelError || undefined };
     }
   }
 
-  // 若全部撞 429，做一次短暫隨機退避再重試不同起點
   if (sawRateLimit) {
     await new Promise((r) => setTimeout(r, 1200 + Math.floor(Math.random() * 1000)));
     const retryKey = keys[(startKeyIdx + 1) % keys.length];
     for (const model of models) {
       const result = await tryCall(retryKey, model);
-      if (result === "ok") return { text: cachedText, status: "ok" };
+      if (result === "ok") return { text: cachedText, status: "ok", modelUsed, primaryModelError: primaryModelError || undefined };
     }
   }
 
-  return { text: null, status: sawRateLimit ? "rate_limited" : "error" };
+  return { text: null, status: sawRateLimit ? "rate_limited" : "error", primaryModelError: primaryModelError || undefined };
 }
 
 Deno.serve(async (req: Request) => {
@@ -536,6 +571,8 @@ Deno.serve(async (req: Request) => {
 
       let aiStatus: "ok" | "no_key" | "rate_limited" | "error" | "empty" = "ok";
       let aiText = "";
+      let modelUsed = "";
+      let primaryModelError = "";
 
       if (!targetText.trim()) {
         aiStatus = "empty";
@@ -549,9 +586,12 @@ Deno.serve(async (req: Request) => {
         // 相同內容不重複呼叫 Gemini，直接回傳快取建議
         aiStatus = "ok";
         aiText = feedbackDict[season];
+        modelUsed = "cached";
       } else {
         const aiResult = await callGeminiFeedback(season, seat, targetText, report);
         aiStatus = aiResult.status;
+        modelUsed = aiResult.modelUsed ?? "";
+        primaryModelError = aiResult.primaryModelError ?? "";
         if (aiResult.text) {
           aiText = aiResult.text;
           feedbackDict[season] = aiText;
@@ -587,6 +627,8 @@ Deno.serve(async (req: Request) => {
       return jsonResponse({
         status: "ok",
         ai_status: aiStatus,
+        model_used: modelUsed || undefined,
+        primary_model_error: primaryModelError || undefined,
         rule_report: report,
         feedback_text: aiText,
         feedback: feedbackDict,
