@@ -295,7 +295,7 @@ async function callGeminiFeedback(
 1. 第1句（點出季節）：${meta.name}的歌聲從哪裡來？
 2. 第2句（季節風向）：歌聲乘著（${meta.wind}）而來，
 3. 第3句（狀聲詞）：單字聲音寫 3 次（例：沙沙沙）或 4 字／文言疊字，加破折號「——」
-4. 第4句（誰＋做什麼）：${meta.name}的歌聲是（誰＋在做什麼），（不能寫「〇〇的聲音」；冬天不重複寫北風）
+4. 第4句（誰＋做什麼）：開頭必須寫「${meta.name}的歌聲是（誰＋在做什麼），」（正確例：${meta.name}的歌聲是（小鳥唱歌），；只有在括號裡寫成沒有動作的名詞如「打雷的聲音」才算錯，${meta.name}的歌聲是這五個字本身是正確句型！${season === "p4" ? "冬天括號內不可重複寫北風。" : ""}）
 5. 第5句（動起來）：（動詞）過（地點一），（動詞）過（地點二），
 6. 第6句（變魔術）：帶著（數量＋物品）， 或 像（誰）在（做什麼），
 7. 第7句（留結果）：說話／反應／送禮 收尾，加上句號或驚嘆號。
@@ -316,9 +316,8 @@ ${studentText}
 （沿用學生自己寫的同一個主角，改寫 1～2 句更生動的第 5～7 句給他仿寫）`;
 
   const configuredModel = (Deno.env.get("GEMINI_MODEL") || "").trim();
-  const basePool = seat % 2 === 1
-    ? ["gemini-2.5-flash", "gemini-2.5-flash-lite"]
-    : ["gemini-2.5-flash-lite", "gemini-2.5-flash"];
+  // 實測免費層以 gemini-3.1-flash-lite 最穩最快，搭配 gemini-2.5-flash 與 gemini-3.6-flash 作備援池
+  const basePool = ["gemini-3.1-flash-lite", "gemini-2.5-flash", "gemini-3.6-flash"];
   const primaryModel = configuredModel || basePool[0];
   const models = configuredModel
     ? [configuredModel, ...basePool.filter((m) => m !== configuredModel)]
@@ -344,7 +343,9 @@ ${studentText}
         generationConfig.maxOutputTokens = 1200;
         generationConfig.thinkingConfig = { thinkingBudget: 0 };
       } else if (model.includes("gemini-4") || model.includes("gemini-3")) {
-        generationConfig.thinkingConfig = { thinkingLevel: "low" };
+        generationConfig.thinkingConfig = {
+          thinkingLevel: model.includes("flash-lite") ? "minimal" : "low",
+        };
       }
 
       const t0 = Date.now();
