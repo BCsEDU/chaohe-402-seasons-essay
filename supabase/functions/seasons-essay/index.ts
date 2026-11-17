@@ -324,6 +324,14 @@ ${studentText}
 
   const tryCall = async (key: string, model: string): Promise<"ok" | "429" | "err"> => {
     try {
+      const generationConfig: Record<string, unknown> = {
+        temperature: 0.5,
+        maxOutputTokens: 1200,
+      };
+      if (model.includes("2.5")) {
+        generationConfig.thinkingConfig = { thinkingBudget: 0 };
+      }
+
       const res = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
         {
@@ -334,7 +342,7 @@ ${studentText}
           },
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.5, maxOutputTokens: 500 },
+            generationConfig,
           }),
         }
       );
