@@ -757,7 +757,7 @@
             <span>✍️ 第 4 句草稿框</span>
             <span class="example-note" id="line4-example">例：春天的歌聲是（小鳥開早會），</span>
           </div>
-          <input type="text" id="line-4" class="line-input" placeholder="點上方按鈕，或自己寫一句">
+          <input type="text" id="line-4" class="line-input" placeholder="點上方主角按鈕後寫出動作，或自己寫一句">
         </div>
       </div>
 
@@ -870,8 +870,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="js/config.js"></script>
-  <script src="js/grader.js"></script>
+  <script src="js/config.js?v=20261119c"></script>
+  <script src="js/grader.js?v=20261119c"></script>
   <script>
     const CFG = window.SEASONS_CONFIG;
     const API_URL = `${CFG.SUPABASE_URL}/functions/v1/${CFG.FUNCTION_NAME}`;
@@ -1091,10 +1091,10 @@
         `)
         .join("");
 
-      // 第 4 句：主角按鈕＋自己想主角按鈕
+      // 第 4 句：純主角按鈕＋自己想主角按鈕
       document.getElementById("hero-list").innerHTML =
         meta.heroIdeas
-          .map((h) => `<button type="button" class="pick-chip" onclick="pickHero('${escapeHtml(h)}')">💡 ${escapeHtml(h)}</button>`)
+          .map((h) => `<button type="button" class="pick-chip" onclick="pickHero('${escapeHtml(h)}')">${escapeHtml(h)}</button>`)
           .join("") +
         `<button type="button" class="pick-chip ghost" onclick="pickHero('')">✏️ 自己想主角</button>`;
 
@@ -1187,19 +1187,12 @@
       }
       const meta = CFG.SEASONS[currentTab];
       ensureDefaultsBeforeFilling();
-      if (heroText) {
-        lineInputs[3].value = `${meta.name}的歌聲是（${heroText}），`;
-        combineLinesToDraft(currentTab);
-        onDraftSynced(true);
-        lineInputs[3].focus();
-      } else {
-        const prefix = `${meta.name}的歌聲是（`;
-        lineInputs[3].value = `${prefix}），`;
-        combineLinesToDraft(currentTab);
-        onDraftSynced(true);
-        lineInputs[3].focus();
-        lineInputs[3].setSelectionRange(prefix.length, prefix.length);
-      }
+      const prefix = `${meta.name}的歌聲是（${heroText || ""}`;
+      lineInputs[3].value = `${prefix}），`;
+      combineLinesToDraft(currentTab);
+      onDraftSynced(true);
+      lineInputs[3].focus();
+      lineInputs[3].setSelectionRange(prefix.length, prefix.length);
     }
 
     function pickTemplate(lineNum, templateText) {

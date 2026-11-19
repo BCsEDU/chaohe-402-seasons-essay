@@ -24,6 +24,12 @@ const SEASONS: Record<SeasonKey, SeasonMeta> = {
 };
 
 const LITERARY_TWO_CHAR_SOUNDS = new Set(["蕭蕭", "颯颯", "淙淙", "潺潺", "濺濺", "瀝瀝"]);
+const BARE_HERO_NOUNS = new Set([
+  "小鳥", "春雨", "小溪", "蜜蜂",
+  "西北雨", "雷公", "青蛙", "小河",
+  "芒草", "枯葉", "蟋蟀", "稻穗",
+  "滑雪板", "鞭炮", "大樹", "熱湯",
+]);
 
 interface CheckItem {
   id: string;
@@ -193,7 +199,7 @@ function gradeSeasonParagraph(season: SeasonKey, rawText: string): RuleReport {
     whoTip = `第 4 句請寫「${meta.name}的歌聲是（誰＋在做什麼），」`;
   } else if (/(的聲音|聲響|聲音)$/.test(whoClean)) {
     whoTip = `「${whoClean}」是靜態名詞，請改成「誰＋在做什麼」（例如把打雷的聲音改成「雷公打大鼓」）。`;
-  } else if (whoClean.length <= 2) {
+  } else if (whoClean.length <= 2 || BARE_HERO_NOUNS.has(whoClean)) {
     whoTip = `「${whoClean}」還少了動作喔！要寫出「誰＋在做什麼」。`;
   } else if (season === "p4" && (whoClean.includes("北風") || whoClean.includes("寒風") || whoClean.includes("冷風"))) {
     whoTip = "第 2 句已經用過「北風」了，第 4 句換別的主角（如滑雪板、鞭炮、大樹、熱湯）才不會重複！";

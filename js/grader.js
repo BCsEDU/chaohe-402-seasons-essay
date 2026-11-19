@@ -86,13 +86,14 @@ window.SeasonsGrader = (function () {
     // 4. 第 4 句：誰＋在做什麼
     const afterIs = line4.includes("的歌聲是") ? (line4.split("的歌聲是")[1] || "") : line4;
     const whoClean = stripOuterParens(afterIs.replace(/[，,。.\s　]/g, ""));
+    const bareHeroes = new Set(meta.heroIdeas || []);
     let whoPassed = false;
     let whoTip = "";
     if (!line4.includes("歌聲是") || !whoClean || isPlaceholder(whoClean)) {
       whoTip = `第 4 句請寫「${meta.name}的歌聲是（誰＋在做什麼），」`;
     } else if (/(的聲音|聲響|聲音)$/.test(whoClean)) {
       whoTip = `「${whoClean}」是靜態名詞，請改成「誰＋在做什麼」（例如：雷公打大鼓）。`;
-    } else if (whoClean.length <= 2) {
+    } else if (whoClean.length <= 2 || bareHeroes.has(whoClean)) {
       whoTip = `「${whoClean}」還少了動作喔！要寫出「誰＋在做什麼」。`;
     } else if (seasonKey === "p4" && (whoClean.includes("北風") || whoClean.includes("寒風") || whoClean.includes("冷風"))) {
       whoTip = "第 2 句已經用過「北風」了，第 4 句換別的主角（如滑雪板、鞭炮、大樹、熱湯）才不會重複！";
