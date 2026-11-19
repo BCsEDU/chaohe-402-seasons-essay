@@ -253,20 +253,6 @@
       font-weight: 600;
     }
 
-    /* 1、2句並排或緊湊列 */
-    .intro-lines-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .mini-field label {
-      display: block;
-      font-size: 0.84rem;
-      font-weight: 800;
-      color: #475569;
-      margin-bottom: 4px;
-    }
-
     /* 單句草稿輸入框 */
     .line-input {
       width: 100%;
@@ -292,10 +278,20 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
       font-size: 0.86rem;
       font-weight: 800;
       color: #0f766e;
       margin-bottom: 5px;
+    }
+    .example-note {
+      background: #fef3c7;
+      color: #92400e;
+      font-size: 0.84rem;
+      font-weight: 700;
+      padding: 2px 9px;
+      border-radius: 6px;
     }
 
     /* 直式注音樣式 */
@@ -665,7 +661,6 @@
       .tabs { grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 8px; }
       .tab-btn { border-radius: 10px; border-bottom: 2px solid #e2e8f0; }
       .workspace-card { border-radius: 12px; padding: 14px 12px; }
-      .intro-lines-grid { grid-template-columns: 1fr; }
       .action-bar { flex-direction: column; }
     }
   </style>
@@ -717,22 +712,22 @@
         <div class="mood-pill" id="season-mood">心情：開心、熱鬧</div>
       </div>
 
-      <!-- 第 1～2 句：季節問句與乘風 -->
+      <!-- 第 1 句：季節問句（新詩第一行） -->
       <div class="step-card">
         <div class="step-head">
-          <div class="step-title"><span class="step-num-badge">第 1～2 句</span> 開頭問句與季節風向</div>
-          <span class="step-subnote">已先幫你放好開頭句，可直接修改</span>
+          <div class="step-title"><span class="step-num-badge">第 1 句</span> 點出季節（開頭問句）</div>
+          <span class="step-subnote">已先幫你放好第一行，可直接修改</span>
         </div>
-        <div class="intro-lines-grid">
-          <div class="mini-field">
-            <label for="line-1">第 1 句（點出季節）</label>
-            <input type="text" id="line-1" class="line-input" placeholder="春天的歌聲從哪裡來？">
-          </div>
-          <div class="mini-field">
-            <label for="line-2">第 2 句（對應風向）</label>
-            <input type="text" id="line-2" class="line-input" placeholder="歌聲乘著（東風）而來，">
-          </div>
+        <input type="text" id="line-1" class="line-input" placeholder="春天的歌聲從哪裡來？">
+      </div>
+
+      <!-- 第 2 句：季節風向（新詩第二行） -->
+      <div class="step-card">
+        <div class="step-head">
+          <div class="step-title"><span class="step-num-badge">第 2 句</span> 搭配季節風向</div>
+          <span class="step-subnote">寫完會接在第二行，和第一句分開換行</span>
         </div>
+        <input type="text" id="line-2" class="line-input" placeholder="歌聲乘著（東風）而來，">
       </div>
 
       <!-- 第 3 句：挑選聲音（直式注音）＋ 第 3 句輸入框 -->
@@ -751,40 +746,38 @@
         </div>
       </div>
 
-      <!-- 第 4 句：主角靈感（誰＋在做什麼）＋ 第 4 句輸入框 -->
+      <!-- 第 4 句：主角按鈕＋自填鈕＋單一例句 -->
       <div class="step-card">
         <div class="step-head">
           <div class="step-title"><span class="step-num-badge">第 4 句</span> 決定主角（誰＋在做什麼）</div>
-          <span class="step-subnote">不要只寫「〇〇的聲音」，要有動作喔！</span>
         </div>
         <div class="chip-row" id="hero-list"></div>
-        <div id="season-warning" class="warning-note" style="display:none;"></div>
         <div class="sentence-input-wrap">
           <div class="sentence-input-label">
             <span>✍️ 第 4 句草稿框</span>
-            <span class="step-subnote" id="line4-hint">例：春天的歌聲是（小鳥開早會），</span>
+            <span class="example-note" id="line4-example">例：春天的歌聲是（小鳥開早會），</span>
           </div>
-          <input type="text" id="line-4" class="line-input" placeholder="點上方靈感或自己輸入：例 春天的歌聲是（誰＋在做什麼），">
+          <input type="text" id="line-4" class="line-input" placeholder="點上方按鈕，或自己寫一句">
         </div>
       </div>
 
-      <!-- 第 5 句：動起來 ＋ 第 5 句輸入框 -->
+      <!-- 第 5 句：動起來 ＋ 例句 ＋ 第 5 句輸入框 -->
       <div class="step-card highlight-step">
         <div class="step-head">
           <div class="step-title"><span class="step-num-badge">第 5 句</span> 動起來（動作＋兩個地點）</div>
-          <span class="step-subnote">點一個句型骨架寫進來，再把括號改成你的想像</span>
+          <span class="step-subnote">點一個句型寫進來，把括號換成你的想像</span>
         </div>
         <div class="chip-row" id="line5-chips"></div>
         <div class="sentence-input-wrap">
           <div class="sentence-input-label">
             <span>✍️ 第 5 句草稿框</span>
-            <span class="step-subnote">※「過」也可換成進、上、到</span>
+            <span class="example-note" id="line5-example">例：飛過花園，穿過大樹，</span>
           </div>
-          <input type="text" id="line-5" class="line-input" placeholder="例：（動詞）過（地點一），（動詞）過（地點二），">
+          <input type="text" id="line-5" class="line-input" placeholder="點上方句型按鈕再替換括號，或自己寫一句">
         </div>
       </div>
 
-      <!-- 第 6 句：變魔術 ＋ 第 6 句輸入框 -->
+      <!-- 第 6 句：變魔術 ＋ 例句 ＋ 第 6 句輸入框 -->
       <div class="step-card highlight-step">
         <div class="step-head">
           <div class="step-title"><span class="step-num-badge">第 6 句</span> 變魔術（把聲音變成看得到的畫面）</div>
@@ -794,12 +787,13 @@
         <div class="sentence-input-wrap">
           <div class="sentence-input-label">
             <span>✍️ 第 6 句草稿框</span>
+            <span class="example-note" id="line6-example">例：帶著一枝可愛的小喇叭，</span>
           </div>
-          <input type="text" id="line-6" class="line-input" placeholder="例：帶著（數量＋物品）， 或 像（誰）在（做什麼），">
+          <input type="text" id="line-6" class="line-input" placeholder="點上方句型按鈕再替換括號，或自己寫一句">
         </div>
       </div>
 
-      <!-- 第 7 句：挑一招收尾 ＋ 第 7 句輸入框 -->
+      <!-- 第 7 句：挑一招收尾 ＋ 例句 ＋ 第 7 句輸入框 -->
       <div class="step-card highlight-step">
         <div class="step-head">
           <div class="step-title"><span class="step-num-badge">第 7 句</span> 挑一招收尾（記得加句號或驚嘆號）</div>
@@ -809,8 +803,9 @@
         <div class="sentence-input-wrap">
           <div class="sentence-input-label">
             <span>✍️ 第 7 句草稿框</span>
+            <span class="example-note" id="line7-example">例：大聲對大家說：「春天來了！」</span>
           </div>
-          <input type="text" id="line-7" class="line-input" placeholder="例：大聲對（誰）說：「（一句話）。」">
+          <input type="text" id="line-7" class="line-input" placeholder="點上方招式按鈕再替換括號，或自己寫一句">
         </div>
       </div>
 
@@ -1075,7 +1070,11 @@
       document.getElementById("season-title").textContent = `${meta.tabLabel.replace("：", "・")}的歌聲`;
       document.getElementById("season-mood").textContent = `心情：${meta.mood}`;
       document.getElementById("final-draft-title").textContent = `📝 ${meta.tabLabel.replace("：", "（")}）總草稿欄`;
-      document.getElementById("line4-hint").textContent = `例：${meta.name}的歌聲是（${meta.heroIdeas[0]}），`;
+      const ex = meta.lineExamples || {};
+      document.getElementById("line4-example").textContent = `例：${ex.line4 || `${meta.name}的歌聲是（${meta.heroIdeas[0]}），`}`;
+      document.getElementById("line5-example").textContent = `例：${ex.line5 || ""}`;
+      document.getElementById("line6-example").textContent = `例：${ex.line6 || ""}`;
+      document.getElementById("line7-example").textContent = `例：${ex.line7 || ""}`;
 
       // 第 1、2 句 placeholders
       lineInputs[0].placeholder = `${meta.name}的歌聲從哪裡來？`;
@@ -1092,20 +1091,12 @@
         `)
         .join("");
 
-      // 第 4 句：可點選的主角靈感＋自填句頭鈕
+      // 第 4 句：主角按鈕＋自己想主角按鈕
       document.getElementById("hero-list").innerHTML =
         meta.heroIdeas
           .map((h) => `<button type="button" class="pick-chip" onclick="pickHero('${escapeHtml(h)}')">💡 ${escapeHtml(h)}</button>`)
           .join("") +
-        `<button type="button" class="pick-chip ghost" onclick="pickHero('')">🪄 自己想主角（先帶入「${meta.name}的歌聲是（），」）</button>`;
-
-      const warnEl = document.getElementById("season-warning");
-      if (meta.warningNote) {
-        warnEl.style.display = "block";
-        warnEl.textContent = meta.warningNote;
-      } else {
-        warnEl.style.display = "none";
-      }
+        `<button type="button" class="pick-chip ghost" onclick="pickHero('')">✏️ 自己想主角</button>`;
 
       // 第 5～7 句：大原則句型鈕
       document.getElementById("line5-chips").innerHTML = CFG.FORMULA_CHIPS.line5
