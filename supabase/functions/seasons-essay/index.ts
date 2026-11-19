@@ -116,6 +116,9 @@ function splitPoemLines(raw: string): string[] {
 }
 
 function isPlaceholder(val: string): boolean {
+  if (/[（(](?:動詞|地點一|地點二|起點|終點|數量＋物品|誰|做什麼|誰＋在做什麼|一句話|做出什麼動作|快樂／清涼／希望|哪裡)[）)]/.test(val)) {
+    return true;
+  }
   const cleaned = val.replace(/[（()）　\s，。？！—\-]/g, "");
   return cleaned.length === 0 || /^(狀聲詞|誰|動詞|地點|物品|一句話|寫在這裡)$/.test(cleaned);
 }

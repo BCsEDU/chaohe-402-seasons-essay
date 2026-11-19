@@ -35,7 +35,7 @@
     }
 
     .container {
-      max-width: 900px;
+      max-width: 920px;
       margin: 0 auto;
       background: var(--surface);
       border-radius: 18px;
@@ -180,7 +180,7 @@
     .workspace-card {
       border: 2px solid var(--season-color);
       border-radius: 0 0 14px 14px;
-      padding: 18px 18px 20px;
+      padding: 18px 18px 22px;
       background: #fff;
     }
     .season-header {
@@ -190,7 +190,7 @@
       flex-wrap: wrap;
       gap: 8px;
       padding-bottom: 12px;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
       border-bottom: 1px dashed #cbd5e1;
     }
     .season-title {
@@ -210,35 +210,98 @@
       border: 1px solid rgba(0, 0, 0, 0.08);
     }
 
-    /* 整合引導區 */
-    .guide-block {
+    /* 逐句引導＋輸入步驟卡 */
+    .step-card {
       background: #f8fafc;
-      border: 1px solid #e2e8f0;
+      border: 1.5px solid #e2e8f0;
       border-radius: 12px;
       padding: 14px 16px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
-    .guide-block-title {
-      font-weight: 900;
-      font-size: 0.98rem;
-      color: #1e293b;
-      margin-bottom: 8px;
+    .step-card.highlight-step {
+      background: #fffcf5;
+      border-color: #fde68a;
+    }
+    .step-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 8px;
+      margin-bottom: 10px;
     }
-    .guide-subnote {
+    .step-title {
+      font-weight: 900;
+      font-size: 1rem;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .step-num-badge {
+      display: inline-block;
+      background: var(--season-color);
+      color: #fff;
+      font-size: 0.78rem;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-weight: 900;
+    }
+    .step-subnote {
       font-size: 0.84rem;
       color: var(--muted);
       font-weight: 600;
     }
 
-    /* 聲音點選鈕 */
+    /* 1、2句並排或緊湊列 */
+    .intro-lines-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .mini-field label {
+      display: block;
+      font-size: 0.84rem;
+      font-weight: 800;
+      color: #475569;
+      margin-bottom: 4px;
+    }
+
+    /* 單句草稿輸入框 */
+    .line-input {
+      width: 100%;
+      padding: 11px 14px;
+      font-size: 1.04rem;
+      font-weight: 600;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      background: #fff;
+      color: #0f172a;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .line-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+    }
+    .sentence-input-wrap {
+      margin-top: 10px;
+    }
+    .sentence-input-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.86rem;
+      font-weight: 800;
+      color: #0f766e;
+      margin-bottom: 5px;
+    }
+
+    /* 直式注音樣式 */
     .sound-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
       gap: 8px;
     }
     .sound-chip {
@@ -246,12 +309,12 @@
       background: #fff;
       border: 1.5px solid #cbd5e1;
       border-radius: 10px;
-      padding: 8px 11px;
+      padding: 9px 11px;
       cursor: pointer;
       transition: all 0.15s;
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 5px;
     }
     .sound-chip:hover {
       border-color: var(--season-color);
@@ -261,17 +324,51 @@
     .sound-chip.selected {
       border-color: var(--season-color);
       background: var(--season-soft);
-      box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.15);
+      box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.16);
     }
-    .sound-word {
-      font-size: 1rem;
+    .zy-word-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
+      min-height: 36px;
+    }
+    .zy-pair {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .zy-han {
+      font-size: 1.24rem;
       font-weight: 900;
       color: #0f172a;
+      line-height: 1.1;
     }
-    .sound-zhuyin {
-      font-size: 0.78rem;
+    .zy-bopo {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 0px;
       color: #0f766e;
-      font-weight: 700;
+    }
+    .zy-syms {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.62rem;
+      line-height: 0.9;
+      font-weight: 800;
+    }
+    .zy-tone {
+      font-size: 0.65rem;
+      line-height: 0.85;
+      font-weight: 900;
+      margin-bottom: 1px;
+    }
+    .zy-punct {
+      font-size: 1.12rem;
+      font-weight: 900;
+      color: #0f172a;
+      margin-right: 1px;
     }
     .sound-desc {
       font-size: 0.8rem;
@@ -279,22 +376,35 @@
       line-height: 1.35;
     }
 
-    /* 主角靈感 Chips */
-    .hero-list {
+    /* 可點選的句型／靈感素材鈕 */
+    .chip-row {
       display: flex;
       flex-wrap: wrap;
       gap: 7px;
-      margin-top: 6px;
     }
-    .hero-tag {
+    .pick-chip {
       background: #fff;
-      border: 1px dashed #94a3b8;
+      border: 1.5px solid #cbd5e1;
       border-radius: 999px;
-      padding: 4px 12px;
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: #334155;
+      padding: 6px 13px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #1e293b;
+      cursor: pointer;
+      transition: all 0.15s;
     }
+    .pick-chip:hover {
+      border-color: var(--season-color);
+      background: var(--season-soft);
+    }
+    .pick-chip.ghost {
+      border-style: dashed;
+      color: #1d4ed8;
+      border-color: #93c5fd;
+      background: #eff6ff;
+    }
+    .pick-chip.ghost:hover { background: #dbeafe; }
+
     .warning-note {
       margin-top: 8px;
       background: #fef2f2;
@@ -302,43 +412,8 @@
       border-left: 4px solid #ef4444;
       padding: 6px 10px;
       border-radius: 6px;
-      font-size: 0.88rem;
+      font-size: 0.86rem;
       font-weight: 700;
-    }
-
-    /* 7句寫作大原則公式 */
-    .formula-box {
-      background: var(--accent-soft);
-      border: 1.5px solid #fcd34d;
-      border-radius: 12px;
-      padding: 13px 16px;
-      margin-bottom: 14px;
-    }
-    .formula-list {
-      list-style: none;
-      display: grid;
-      gap: 5px;
-      font-size: 0.92rem;
-    }
-    .formula-list li {
-      display: flex;
-      gap: 8px;
-      align-items: baseline;
-      flex-wrap: wrap;
-    }
-    .line-num {
-      display: inline-block;
-      min-width: 56px;
-      font-weight: 900;
-      color: #b45309;
-    }
-    .formula-code {
-      background: rgba(255, 255, 255, 0.85);
-      padding: 1px 7px;
-      border-radius: 5px;
-      border: 1px solid #fde68a;
-      font-weight: 700;
-      color: #1e293b;
     }
 
     /* 可收合示範詩 */
@@ -373,7 +448,14 @@
       font-weight: 700;
     }
 
-    /* 寫作框工具列與輸入區 */
+    /* 總草稿欄 */
+    .final-draft-card {
+      background: #f0fdfa;
+      border: 2px solid #5eead4;
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 6px;
+    }
     .editor-toolbar {
       display: flex;
       align-items: center;
@@ -382,25 +464,37 @@
       gap: 8px;
       margin-bottom: 8px;
     }
+    .toolbar-btns { display: flex; gap: 6px; flex-wrap: wrap; }
     .btn-skeleton {
-      background: #eff6ff;
-      color: #1d4ed8;
-      border: 1.5px solid #93c5fd;
+      background: #ffffff;
+      color: #0f766e;
+      border: 1.5px solid #5eead4;
       border-radius: 8px;
-      padding: 7px 14px;
-      font-size: 0.92rem;
+      padding: 5px 11px;
+      font-size: 0.86rem;
       font-weight: 800;
       cursor: pointer;
     }
-    .btn-skeleton:hover { background: #dbeafe; }
+    .btn-skeleton:hover { background: #ccfbf1; }
+    .btn-clear-seg {
+      background: #ffffff;
+      color: #b91c1c;
+      border: 1.5px solid #fecaca;
+      border-radius: 8px;
+      padding: 5px 11px;
+      font-size: 0.86rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn-clear-seg:hover { background: #fee2e2; }
 
     textarea.draft-input {
       width: 100%;
-      min-height: 240px;
+      min-height: 215px;
       padding: 14px 16px;
       font-size: 1.08rem;
       line-height: 1.85;
-      border: 2px solid #cbd5e1;
+      border: 2px solid #99f6e4;
       border-radius: 12px;
       resize: vertical;
       font-family: inherit;
@@ -566,11 +660,12 @@
       border: 1px solid #cbd5e1;
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 680px) {
       .container { padding: 14px 12px 22px; }
       .tabs { grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 8px; }
       .tab-btn { border-radius: 10px; border-bottom: 2px solid #e2e8f0; }
       .workspace-card { border-radius: 12px; padding: 14px 12px; }
+      .intro-lines-grid { grid-template-columns: 1fr; }
       .action-bar { flex-direction: column; }
     }
   </style>
@@ -587,7 +682,7 @@
 
     <header class="hero">
       <h1>📝 第八課《四季的歌聲》寫作草稿平台</h1>
-      <p>依「春 → 夏 → 秋 → 冬」寫下四段童詩，點選按鈕就會自動檢查 7 句結構並給建議！</p>
+      <p>依「春 → 夏 → 秋 → 冬」一格一格選素材並寫句子，最後會自動組合成總草稿欄！</p>
     </header>
 
     <div class="seat-box">
@@ -622,50 +717,129 @@
         <div class="mood-pill" id="season-mood">心情：開心、熱鬧</div>
       </div>
 
-      <!-- ① 聲音百寶箱 -->
-      <div class="guide-block">
-        <div class="guide-block-title">
-          <span>① 挑一個這個季節的聲音（點一下自動填入第 3 句！）</span>
-          <span class="guide-subnote">單字聲音要寫 3 次，或選 4 個字的聲音</span>
+      <!-- 第 1～2 句：季節問句與乘風 -->
+      <div class="step-card">
+        <div class="step-head">
+          <div class="step-title"><span class="step-num-badge">第 1～2 句</span> 開頭問句與季節風向</div>
+          <span class="step-subnote">已先幫你放好開頭句，可直接修改</span>
+        </div>
+        <div class="intro-lines-grid">
+          <div class="mini-field">
+            <label for="line-1">第 1 句（點出季節）</label>
+            <input type="text" id="line-1" class="line-input" placeholder="春天的歌聲從哪裡來？">
+          </div>
+          <div class="mini-field">
+            <label for="line-2">第 2 句（對應風向）</label>
+            <input type="text" id="line-2" class="line-input" placeholder="歌聲乘著（東風）而來，">
+          </div>
+        </div>
+      </div>
+
+      <!-- 第 3 句：挑選聲音（直式注音）＋ 第 3 句輸入框 -->
+      <div class="step-card">
+        <div class="step-head">
+          <div class="step-title"><span class="step-num-badge">第 3 句</span> 挑一個聲音，直接寫進第 3 句</div>
+          <span class="step-subnote">單字聲音要寫 3 次，或選 4 個字的聲音</span>
         </div>
         <div class="sound-grid" id="sound-grid"></div>
+        <div class="sentence-input-wrap">
+          <div class="sentence-input-label">
+            <span>✍️ 第 3 句草稿框</span>
+            <span class="step-subnote">也可自己打字改成別的聲音</span>
+          </div>
+          <input type="text" id="line-3" class="line-input" placeholder="點上方聲音按鈕就會填入這裡，或自己寫：例（沙沙沙）——">
+        </div>
       </div>
 
-      <!-- ② 主角靈感 -->
-      <div class="guide-block">
-        <div class="guide-block-title">
-          <span>② 第 4 句主角靈感（要寫「誰＋在做什麼」，不要寫「〇〇的聲音」）</span>
+      <!-- 第 4 句：主角靈感（誰＋在做什麼）＋ 第 4 句輸入框 -->
+      <div class="step-card">
+        <div class="step-head">
+          <div class="step-title"><span class="step-num-badge">第 4 句</span> 決定主角（誰＋在做什麼）</div>
+          <span class="step-subnote">不要只寫「〇〇的聲音」，要有動作喔！</span>
         </div>
-        <div class="hero-list" id="hero-list"></div>
+        <div class="chip-row" id="hero-list"></div>
         <div id="season-warning" class="warning-note" style="display:none;"></div>
-      </div>
-
-      <!-- ③ 第4~7句大原則結構公式 -->
-      <div class="formula-box">
-        <div class="guide-block-title" style="color:#92400e;">
-          <span>③ 7 句寫詩結構（照公式自由發揮你的想像力！）</span>
+        <div class="sentence-input-wrap">
+          <div class="sentence-input-label">
+            <span>✍️ 第 4 句草稿框</span>
+            <span class="step-subnote" id="line4-hint">例：春天的歌聲是（小鳥開早會），</span>
+          </div>
+          <input type="text" id="line-4" class="line-input" placeholder="點上方靈感或自己輸入：例 春天的歌聲是（誰＋在做什麼），">
         </div>
-        <ul class="formula-list" id="formula-list"></ul>
       </div>
 
-      <!-- ④ 可收合示範詩 -->
+      <!-- 第 5 句：動起來 ＋ 第 5 句輸入框 -->
+      <div class="step-card highlight-step">
+        <div class="step-head">
+          <div class="step-title"><span class="step-num-badge">第 5 句</span> 動起來（動作＋兩個地點）</div>
+          <span class="step-subnote">點一個句型骨架寫進來，再把括號改成你的想像</span>
+        </div>
+        <div class="chip-row" id="line5-chips"></div>
+        <div class="sentence-input-wrap">
+          <div class="sentence-input-label">
+            <span>✍️ 第 5 句草稿框</span>
+            <span class="step-subnote">※「過」也可換成進、上、到</span>
+          </div>
+          <input type="text" id="line-5" class="line-input" placeholder="例：（動詞）過（地點一），（動詞）過（地點二），">
+        </div>
+      </div>
+
+      <!-- 第 6 句：變魔術 ＋ 第 6 句輸入框 -->
+      <div class="step-card highlight-step">
+        <div class="step-head">
+          <div class="step-title"><span class="step-num-badge">第 6 句</span> 變魔術（把聲音變成看得到的畫面）</div>
+          <span class="step-subnote">點一個句型寫進來，把括號換成你想像的東西</span>
+        </div>
+        <div class="chip-row" id="line6-chips"></div>
+        <div class="sentence-input-wrap">
+          <div class="sentence-input-label">
+            <span>✍️ 第 6 句草稿框</span>
+          </div>
+          <input type="text" id="line-6" class="line-input" placeholder="例：帶著（數量＋物品）， 或 像（誰）在（做什麼），">
+        </div>
+      </div>
+
+      <!-- 第 7 句：挑一招收尾 ＋ 第 7 句輸入框 -->
+      <div class="step-card highlight-step">
+        <div class="step-head">
+          <div class="step-title"><span class="step-num-badge">第 7 句</span> 挑一招收尾（記得加句號或驚嘆號）</div>
+          <span class="step-subnote">點一種結尾招式寫進來，再寫出你的內容</span>
+        </div>
+        <div class="chip-row" id="line7-chips"></div>
+        <div class="sentence-input-wrap">
+          <div class="sentence-input-label">
+            <span>✍️ 第 7 句草稿框</span>
+          </div>
+          <input type="text" id="line-7" class="line-input" placeholder="例：大聲對（誰）說：「（一句話）。」">
+        </div>
+      </div>
+
+      <!-- 可收合示範詩 -->
       <details class="example-details" id="example-details">
         <summary>👀 點我看這一季的示範詩（看看別人怎麼發揮想像力）</summary>
         <div class="example-poem" id="example-poem"></div>
         <div class="example-tip" id="example-tip"></div>
       </details>
 
-      <!-- ⑤ 寫作草稿區 -->
-      <div class="editor-toolbar">
-        <strong style="font-size:1rem;color:#1e293b;">✍️ 在這裡寫下這一段的草稿：</strong>
-        <button type="button" class="btn-skeleton" onclick="insertSkeleton()">🪄 填入 7 句空白骨架</button>
-      </div>
+      <!-- 總草稿欄：自動結合 1~7 句，並可直接在這裡修改 -->
+      <div class="final-draft-card">
+        <div class="editor-toolbar">
+          <div>
+            <strong style="font-size:1.05rem;color:#0f766e;" id="final-draft-title">📝 第一段（春天）總草稿欄</strong>
+            <div class="step-subnote">上面第 1～7 句會自動結合在這裡；你也可以直接在這裡修改，上面格子會同步更新！</div>
+          </div>
+          <div class="toolbar-btns">
+            <button type="button" class="btn-skeleton" onclick="rebuildFromLines()">🔄 重新依上方 1～7 句合併</button>
+            <button type="button" class="btn-clear-seg" onclick="clearCurrentSegment()">🗑️ 清空本段</button>
+          </div>
+        </div>
 
-      <textarea id="draft-textarea" class="draft-input" placeholder="先選座號，再點上面的「🪄 填入 7 句空白骨架」或直接寫出你的 7 句童詩..."></textarea>
+        <textarea id="draft-textarea" class="draft-input" placeholder="當你在上面寫第 3～7 句時，完整的 7 句草稿會即時結合出現在這裡，也可以直接打字修改..."></textarea>
 
-      <div class="meta-row">
-        <span id="save-status">🟢 隨打即存已就緒</span>
-        <span id="line-counter">目前 0 行 / 0 字</span>
+        <div class="meta-row">
+          <span id="save-status">🟢 隨打即存已就緒</span>
+          <span id="line-counter">目前 0 行 / 0 字</span>
+        </div>
       </div>
 
       <div class="action-bar">
@@ -728,6 +902,8 @@
     const loadingBox = document.getElementById("loading-box");
     const feedbackPanel = document.getElementById("feedback-panel");
 
+    const lineInputs = [1, 2, 3, 4, 5, 6, 7].map((n) => document.getElementById(`line-${n}`));
+
     function escapeHtml(str) {
       return String(str || "")
         .replace(/&/g, "&amp;")
@@ -740,6 +916,42 @@
     function renderSafeMarkdown(mdText) {
       const safe = escapeHtml(mdText);
       return window.marked ? window.marked.parse(safe) : safe.replace(/\n/g, "<br>");
+    }
+
+    /** 將詞語與對應注音轉成直式注音 HTML（每個國字右側直排注音＋聲調） */
+    function renderVerticalZhuyinWord(word, zhuyinStr) {
+      const syllables = String(zhuyinStr || "").trim().split(/\s+/).filter(Boolean);
+      let sylIdx = 0;
+      const parts = Array.from(String(word || "")).map((ch) => {
+        if (/[！!？?，,。.、—\-]/.test(ch)) {
+          return `<span class="zy-punct">${escapeHtml(ch)}</span>`;
+        }
+        const syl = syllables[sylIdx++] || "";
+        if (!syl) {
+          return `<span class="zy-han">${escapeHtml(ch)}</span>`;
+        }
+        const toneMatch = syl.match(/[ˊˇˋ˙]/);
+        const tone = toneMatch ? toneMatch[0] : "";
+        const syms = Array.from(syl.replace(/[ˊˇˋ˙]/g, ""));
+        return `
+          <span class="zy-pair">
+            <span class="zy-han">${escapeHtml(ch)}</span>
+            <span class="zy-bopo">
+              <span class="zy-syms">${syms.map((s) => `<span>${escapeHtml(s)}</span>`).join("")}</span>
+              ${tone ? `<span class="zy-tone">${escapeHtml(tone)}</span>` : ""}
+            </span>
+          </span>
+        `;
+      });
+      return `<div class="zy-word-row">${parts.join("")}</div>`;
+    }
+
+    function getDefaultIntroLines(seasonKey) {
+      const meta = CFG.SEASONS[seasonKey];
+      return {
+        l1: `${meta.name}的歌聲從哪裡來？`,
+        l2: `歌聲乘著（${meta.wind}）而來，`
+      };
     }
 
     function initSeatDropdown() {
@@ -807,6 +1019,50 @@
       lineCounterEl.textContent = `目前 ${nonEmptyLines} 行 / ${charCount} 字`;
     }
 
+    function updateSoundSelectionHighlight() {
+      const text = `${lineInputs[2].value} ${drafts[currentTab] || ""}`;
+      document.querySelectorAll(".sound-chip").forEach((btn) => {
+        const w = btn.dataset.word || "";
+        btn.classList.toggle("selected", Boolean(w && text.includes(w)));
+      });
+    }
+
+    /** 把總草稿文字拆回 1～7 句輸入框（總草稿欄空白時，1、2 句顯示預設開頭） */
+    function populateLineInputsFromText(seasonKey, text) {
+      const defaults = getDefaultIntroLines(seasonKey);
+      const raw = String(text || "");
+      if (!raw.trim()) {
+        lineInputs[0].value = defaults.l1;
+        lineInputs[1].value = defaults.l2;
+        for (let i = 2; i < 7; i++) lineInputs[i].value = "";
+        return;
+      }
+      const lines = raw.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+      for (let i = 0; i < 6; i++) {
+        lineInputs[i].value = lines[i] || "";
+      }
+      lineInputs[6].value = lines.length > 7 ? lines.slice(6).join(" ") : (lines[6] || "");
+    }
+
+    /** 把 1～7 句輸入框組合成總草稿（若學生尚未填第 3～7 句且 1～2 句為預設，視為未動筆） */
+    function combineLinesToDraft(seasonKey) {
+      const defaults = getDefaultIntroLines(seasonKey);
+      const vals = lineInputs.map((el) => el.value.trim());
+      const hasCustom =
+        vals.slice(2).some((v) => v.length > 0) ||
+        (vals[0].length > 0 && vals[0] !== defaults.l1) ||
+        (vals[1].length > 0 && vals[1] !== defaults.l2);
+
+      if (!hasCustom) {
+        drafts[seasonKey] = "";
+        draftTextarea.value = "";
+      } else {
+        const combined = vals.filter(Boolean).join("\n");
+        drafts[seasonKey] = combined;
+        draftTextarea.value = combined;
+      }
+    }
+
     function renderSeasonPanel() {
       const meta = CFG.SEASONS[currentTab];
       document.documentElement.style.setProperty("--season-color", meta.color);
@@ -818,27 +1074,30 @@
 
       document.getElementById("season-title").textContent = `${meta.tabLabel.replace("：", "・")}的歌聲`;
       document.getElementById("season-mood").textContent = `心情：${meta.mood}`;
+      document.getElementById("final-draft-title").textContent = `📝 ${meta.tabLabel.replace("：", "（")}）總草稿欄`;
+      document.getElementById("line4-hint").textContent = `例：${meta.name}的歌聲是（${meta.heroIdeas[0]}），`;
 
-      // 聲音點選卡
+      // 第 1、2 句 placeholders
+      lineInputs[0].placeholder = `${meta.name}的歌聲從哪裡來？`;
+      lineInputs[1].placeholder = `歌聲乘著（${meta.wind}）而來，`;
+
+      // 第 3 句：直式注音聲音卡片
       const soundGrid = document.getElementById("sound-grid");
-      const currentText = drafts[currentTab] || "";
       soundGrid.innerHTML = meta.sounds
-        .map((s) => {
-          const isSelected = currentText.includes(s.word);
-          return `
-            <button type="button" class="sound-chip ${isSelected ? "selected" : ""}" onclick="pickSound('${escapeHtml(s.word)}')">
-              <span class="sound-word">${escapeHtml(s.word)}</span>
-              <span class="sound-zhuyin">${escapeHtml(s.zhuyin)}</span>
-              <span class="sound-desc">${escapeHtml(s.desc)}</span>
-            </button>
-          `;
-        })
+        .map((s) => `
+          <button type="button" class="sound-chip" data-word="${escapeHtml(s.word)}" onclick="pickSound('${escapeHtml(s.word)}')">
+            ${renderVerticalZhuyinWord(s.word, s.zhuyin)}
+            <span class="sound-desc">${escapeHtml(s.desc)}</span>
+          </button>
+        `)
         .join("");
 
-      // 主角靈感
-      document.getElementById("hero-list").innerHTML = meta.heroIdeas
-        .map((h) => `<span class="hero-tag">💡 ${escapeHtml(h)}</span>`)
-        .join("") + '<span class="hero-tag">✨ 或自己想「誰＋做什麼」</span>';
+      // 第 4 句：可點選的主角靈感＋自填句頭鈕
+      document.getElementById("hero-list").innerHTML =
+        meta.heroIdeas
+          .map((h) => `<button type="button" class="pick-chip" onclick="pickHero('${escapeHtml(h)}')">💡 ${escapeHtml(h)}</button>`)
+          .join("") +
+        `<button type="button" class="pick-chip ghost" onclick="pickHero('')">🪄 自己想主角（先帶入「${meta.name}的歌聲是（），」）</button>`;
 
       const warnEl = document.getElementById("season-warning");
       if (meta.warningNote) {
@@ -848,24 +1107,28 @@
         warnEl.style.display = "none";
       }
 
-      // 7 句結構公式
-      document.getElementById("formula-list").innerHTML = `
-        <li><span class="line-num">第 1 句</span><span class="formula-code">${meta.name}的歌聲從哪裡來？</span></li>
-        <li><span class="line-num">第 2 句</span><span class="formula-code">歌聲乘著（${meta.wind}）而來，</span></li>
-        <li><span class="line-num">第 3 句</span><span class="formula-code">（聲音寫 3 次或 4 個字）——</span></li>
-        <li><span class="line-num">第 4 句</span><span class="formula-code">${meta.name}的歌聲是（誰）＋（在做什麼），</span></li>
-        <li><span class="line-num">第 5 句</span><span class="formula-code">（動詞）過（地點一），（動詞）過（地點二），</span> <span>※「過」可換成進、上、到</span></li>
-        <li><span class="line-num">第 6 句</span><span class="formula-code">帶著（數量＋物品），</span> 或 <span class="formula-code">像（誰）在（做什麼），</span></li>
-        <li><span class="line-num">第 7 句</span><span class="formula-code">① 對（誰）說：「…」</span> / <span class="formula-code">② 嚇得、逗得（誰）…</span> / <span class="formula-code">③ 把（心情）送進（哪裡）。</span></li>
-      `;
+      // 第 5～7 句：大原則句型鈕
+      document.getElementById("line5-chips").innerHTML = CFG.FORMULA_CHIPS.line5
+        .map((c) => `<button type="button" class="pick-chip" onclick="pickTemplate(5, '${escapeHtml(c.template)}')">${escapeHtml(c.label)}</button>`)
+        .join("");
+
+      document.getElementById("line6-chips").innerHTML = CFG.FORMULA_CHIPS.line6
+        .map((c) => `<button type="button" class="pick-chip" onclick="pickTemplate(6, '${escapeHtml(c.template)}')">${escapeHtml(c.label)}</button>`)
+        .join("");
+
+      document.getElementById("line7-chips").innerHTML = CFG.FORMULA_CHIPS.line7
+        .map((c) => `<button type="button" class="pick-chip" onclick="pickTemplate(7, '${escapeHtml(c.template)}')">${escapeHtml(c.label)}</button>`)
+        .join("");
 
       // 示範詩（預設收起）
       document.getElementById("example-details").open = false;
       document.getElementById("example-poem").textContent = meta.exampleLines.join("\n");
       document.getElementById("example-tip").textContent = `💡 寫作巧思：${meta.exampleTip}`;
 
-      // 草稿框
+      // 填入 1～7 句框與總草稿欄
       draftTextarea.value = drafts[currentTab] || "";
+      populateLineInputsFromText(currentTab, drafts[currentTab] || "");
+      updateSoundSelectionHighlight();
       updateCounter();
       renderFeedbackPanel();
       updateTabBadges();
@@ -907,45 +1170,94 @@
       }
     }
 
+    function ensureDefaultsBeforeFilling() {
+      const defaults = getDefaultIntroLines(currentTab);
+      if (!lineInputs[0].value.trim()) lineInputs[0].value = defaults.l1;
+      if (!lineInputs[1].value.trim()) lineInputs[1].value = defaults.l2;
+    }
+
     function pickSound(soundWord) {
       if (!currentSeat) {
         alert("請先在上方選擇你的座號（1～29 號）喔！");
         return;
       }
-      const cur = draftTextarea.value.trim();
-      if (!cur) {
-        draftTextarea.value = window.SeasonsGrader.buildSkeleton(currentTab, soundWord);
-      } else {
-        const lines = draftTextarea.value.split(/\r?\n/);
-        if (lines.length >= 3) {
-          lines[2] = `（${soundWord}）——`;
-          draftTextarea.value = lines.join("\n");
-        } else {
-          draftTextarea.value = `${draftTextarea.value}\n（${soundWord}）——`;
-        }
-      }
-      onDraftChanged(true);
+      ensureDefaultsBeforeFilling();
+      lineInputs[2].value = `（${soundWord}）——`;
+      combineLinesToDraft(currentTab);
+      updateSoundSelectionHighlight();
+      onDraftSynced(true);
+      lineInputs[2].focus();
     }
 
-    function insertSkeleton() {
+    function pickHero(heroText) {
       if (!currentSeat) {
-        alert("請先選擇你的座號（1～29 號）喔！");
+        alert("請先在上方選擇你的座號（1～29 號）喔！");
         return;
       }
-      if (draftTextarea.value.trim() && !confirm("草稿區已經有文字了，確定要重設成空白 7 句骨架嗎？")) {
-        return;
+      const meta = CFG.SEASONS[currentTab];
+      ensureDefaultsBeforeFilling();
+      if (heroText) {
+        lineInputs[3].value = `${meta.name}的歌聲是（${heroText}），`;
+        combineLinesToDraft(currentTab);
+        onDraftSynced(true);
+        lineInputs[3].focus();
+      } else {
+        const prefix = `${meta.name}的歌聲是（`;
+        lineInputs[3].value = `${prefix}），`;
+        combineLinesToDraft(currentTab);
+        onDraftSynced(true);
+        lineInputs[3].focus();
+        lineInputs[3].setSelectionRange(prefix.length, prefix.length);
       }
-      draftTextarea.value = window.SeasonsGrader.buildSkeleton(currentTab, "");
-      onDraftChanged(true);
     }
 
-    function onDraftChanged(immediateSave = false) {
-      drafts[currentTab] = draftTextarea.value;
+    function pickTemplate(lineNum, templateText) {
+      if (!currentSeat) {
+        alert("請先在上方選擇你的座號（1～29 號）喔！");
+        return;
+      }
+      const inputEl = lineInputs[lineNum - 1];
+      if (!inputEl) return;
+      if (inputEl.value.trim() && inputEl.value.trim() !== templateText && !confirm(`第 ${lineNum} 句已經有文字，要換成這個句型骨架嗎？`)) {
+        return;
+      }
+      ensureDefaultsBeforeFilling();
+      inputEl.value = templateText;
+      combineLinesToDraft(currentTab);
+      onDraftSynced(true);
+      inputEl.focus();
+      const firstOpen = templateText.indexOf("（");
+      const firstClose = templateText.indexOf("）", firstOpen + 1);
+      if (firstOpen >= 0 && firstClose > firstOpen) {
+        inputEl.setSelectionRange(firstOpen + 1, firstClose);
+      }
+    }
+
+    function rebuildFromLines() {
+      combineLinesToDraft(currentTab);
+      updateSoundSelectionHighlight();
+      onDraftSynced(true);
+    }
+
+    function clearCurrentSegment() {
+      if (!currentSeat) {
+        alert("請先在上方選擇你的座號（1～29 號）喔！");
+        return;
+      }
+      if (!confirm("確定要清空這一段的所有內容嗎？")) return;
+      drafts[currentTab] = "";
+      populateLineInputsFromText(currentTab, "");
+      draftTextarea.value = "";
+      delete ruleReportMap[currentTab];
+      updateSoundSelectionHighlight();
+      onDraftSynced(true);
+    }
+
+    function onDraftSynced(immediateSave = false) {
       updateCounter();
       if (!currentSeat) return;
 
-      // 本地即時先跑規則報告更新分頁小標籤
-      if (drafts[currentTab].trim()) {
+      if ((drafts[currentTab] || "").trim()) {
         ruleReportMap[currentTab] = window.SeasonsGrader.grade(currentTab, drafts[currentTab]);
       } else {
         delete ruleReportMap[currentTab];
@@ -1005,7 +1317,6 @@
       feedbackMap = {};
       ruleReportMap = {};
       lastAiGradedText = {};
-      draftTextarea.value = "";
       renderSeasonPanel();
 
       if (!currentSeat) {
@@ -1016,7 +1327,7 @@
 
       saveStatusEl.textContent = `⏳ 正在載入 ${currentSeat} 號作品...`;
 
-      // 1. 先載入本機暫存（零延遲）
+      // 1. 先載入本機暫存
       const local = loadLocalDraft(currentSeat);
       if (local && local.drafts) {
         drafts = { ...drafts, ...local.drafts };
@@ -1116,29 +1427,26 @@
       drafts[currentTab] = draftTextarea.value;
       const trimmed = drafts[currentTab].trim();
       if (!trimmed) {
-        alert("這一段還是空的喔！先點「🪄 填入 7 句空白骨架」寫好再批改吧！");
+        alert("這一段的總草稿欄還是空的喔！先在上面選聲音或寫幾句再批改吧！");
         return;
       }
 
-      // 1. 立刻算本地結構檢查，保證畫面零等待
       const localReport = window.SeasonsGrader.grade(currentTab, drafts[currentTab]);
       ruleReportMap[currentTab] = localReport;
       saveLocalDraft(currentSeat, drafts);
 
-      // 不滿 3 行先顯示本地結構引導，不浪費全班 AI 額度
       const nonEmptyLines = trimmed.split(/\r?\n/).filter((l) => l.trim().length > 0).length;
       if (nonEmptyLines < 3) {
         feedbackMap[currentTab] = window.SeasonsGrader.buildOfflineFeedbackMarkdown(
           currentTab,
           localReport,
-          "（目前行數太少，先照上面結構寫滿至少 3 行以上，再按一次就能讓 AI 老師幫你看喔！）"
+          "（目前行數太少，先在上面寫滿至少 3 句以上，再按一次就能讓 AI 老師幫你看喔！）"
         );
         renderSeasonPanel();
         feedbackPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
         return;
       }
 
-      // 內容與剛批改過的完全一樣，直接展開既有建議
       if (
         lastAiGradedText[currentTab] === trimmed &&
         feedbackMap[currentTab] &&
@@ -1225,11 +1533,29 @@
       }
     }
 
-    // 綁定輸入、離焦、背景同步事件
-    draftTextarea.addEventListener("input", () => onDraftChanged(false));
+    // 雙向同步綁定：1～7 句各自輸入 ➔ 合成總草稿欄
+    lineInputs.forEach((inputEl) => {
+      inputEl.addEventListener("input", () => {
+        combineLinesToDraft(currentTab);
+        updateSoundSelectionHighlight();
+        onDraftSynced(false);
+      });
+      inputEl.addEventListener("blur", () => {
+        if (currentSeat) saveDraft(false);
+      });
+    });
+
+    // 雙向同步綁定：直接在總草稿欄修改 ➔ 反向同步回第 1～7 句框
+    draftTextarea.addEventListener("input", () => {
+      drafts[currentTab] = draftTextarea.value;
+      populateLineInputsFromText(currentTab, draftTextarea.value);
+      updateSoundSelectionHighlight();
+      onDraftSynced(false);
+    });
     draftTextarea.addEventListener("blur", () => {
       if (currentSeat) saveDraft(false);
     });
+
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "hidden" && currentSeat) {
         saveDraft(false);

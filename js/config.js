@@ -6,6 +6,23 @@ window.SEASONS_CONFIG = {
   SEAT_COUNT: 29,
   STORAGE_PREFIX: "seasons_essay_v1_draft_",
   LITERARY_TWO_CHAR_SOUNDS: ["蕭蕭", "颯颯", "淙淙", "潺潺", "濺濺", "瀝瀝"],
+  FORMULA_CHIPS: {
+    line5: [
+      { label: "句型 A：⋯過⋯，⋯過⋯", template: "（動詞）過（地點一），（動詞）過（地點二），" },
+      { label: "句型 B：從⋯出發，到⋯", template: "從（起點）出發，一路（動詞）到（終點），" }
+    ],
+    line6: [
+      { label: "句型 A：帶著⋯", template: "帶著（數量＋物品），" },
+      { label: "句型 B：像誰在⋯", template: "像（誰）在（做什麼），" },
+      { label: "句型 C：變成⋯", template: "變成（數量＋物品），" }
+    ],
+    line7: [
+      { label: "① 說話型", template: "大聲對（誰）說：「（一句話）。」" },
+      { label: "② 反應型（嚇到）", template: "嚇得（誰）（做出什麼動作）。" },
+      { label: "② 反應型（逗樂）", template: "逗得（誰）（做出什麼動作）。" },
+      { label: "③ 送禮型", template: "把（快樂／清涼／希望）送進（哪裡）。" }
+    ]
+  },
   SEASONS: {
     p1: {
       key: "p1",
@@ -80,7 +97,7 @@ window.SEASONS_CONFIG = {
         { word: "颯颯", zhuyin: "ㄙㄚˋ ㄙㄚˋ", desc: "秋風快速吹過芒草和樹葉" },
         { word: "蕭蕭", zhuyin: "ㄒㄧㄠ ㄒㄧㄠ", desc: "涼涼的風吹過草木" },
         { word: "唧唧唧", zhuyin: "ㄐㄧ ㄐㄧ ㄐㄧ", desc: "蟋蟀在草叢裡唱歌" },
-        { word: "咻！咻！咻！", zhuyin: "ㄒㄧㄡ", desc: "課文裡芒草乘風搖晃的聲音" }
+        { word: "咻！咻！咻！", zhuyin: "ㄒㄧㄡ ㄒㄧㄡ ㄒㄧㄡ", desc: "課文裡芒草乘風搖晃的聲音" }
       ],
       heroIdeas: ["芒草在山坡比高", "枯葉離開了大樹", "蟋蟀在草叢拉小提琴"],
       exampleLines: [
