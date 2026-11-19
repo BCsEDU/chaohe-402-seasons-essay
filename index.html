@@ -727,7 +727,7 @@
           <div class="step-title"><span class="step-num-badge">第 2 句</span> 搭配季節風向</div>
           <span class="step-subnote">寫完會接在第二行，和第一句分開換行</span>
         </div>
-        <input type="text" id="line-2" class="line-input" placeholder="歌聲乘著（東風）而來，">
+        <input type="text" id="line-2" class="line-input" placeholder="歌聲乘著東風而來，">
       </div>
 
       <!-- 第 3 句：挑選聲音（直式注音）＋ 第 3 句輸入框 -->
@@ -742,7 +742,7 @@
             <span>✍️ 第 3 句草稿框</span>
             <span class="step-subnote">也可自己打字改成別的聲音</span>
           </div>
-          <input type="text" id="line-3" class="line-input" placeholder="點上方聲音按鈕就會填入這裡，或自己寫：例（沙沙沙）——">
+          <input type="text" id="line-3" class="line-input" placeholder="點上方聲音按鈕就會填入這裡，或自己寫：例 沙沙沙——">
         </div>
       </div>
 
@@ -755,7 +755,7 @@
         <div class="sentence-input-wrap">
           <div class="sentence-input-label">
             <span>✍️ 第 4 句草稿框</span>
-            <span class="example-note" id="line4-example">例：春天的歌聲是（小鳥開早會），</span>
+            <span class="example-note" id="line4-example">例：春天的歌聲是小鳥開早會，</span>
           </div>
           <input type="text" id="line-4" class="line-input" placeholder="點上方主角按鈕後寫出動作，或自己寫一句">
         </div>
@@ -870,8 +870,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="js/config.js?v=20261119c"></script>
-  <script src="js/grader.js?v=20261119c"></script>
+  <script src="js/config.js?v=20261119d"></script>
+  <script src="js/grader.js?v=20261119d"></script>
   <script>
     const CFG = window.SEASONS_CONFIG;
     const API_URL = `${CFG.SUPABASE_URL}/functions/v1/${CFG.FUNCTION_NAME}`;
@@ -941,11 +941,15 @@
       return `<div class="zy-word-row">${parts.join("")}</div>`;
     }
 
+    function stripDraftParens(text) {
+      return String(text || "").replace(/[（()）]/g, "");
+    }
+
     function getDefaultIntroLines(seasonKey) {
       const meta = CFG.SEASONS[seasonKey];
       return {
         l1: `${meta.name}的歌聲從哪裡來？`,
-        l2: `歌聲乘著（${meta.wind}）而來，`
+        l2: `歌聲乘著${meta.wind}而來，`
       };
     }
 
@@ -1039,10 +1043,10 @@
       lineInputs[6].value = lines.length > 7 ? lines.slice(6).join(" ") : (lines[6] || "");
     }
 
-    /** 把 1～7 句輸入框組合成總草稿（若學生尚未填第 3～7 句且 1～2 句為預設，視為未動筆） */
+    /** 把 1～7 句輸入框組合成總草稿（去除括號，若第 3～7 句未填且 1～2 句為預設，視為未動筆） */
     function combineLinesToDraft(seasonKey) {
       const defaults = getDefaultIntroLines(seasonKey);
-      const vals = lineInputs.map((el) => el.value.trim());
+      const vals = lineInputs.map((el) => stripDraftParens(el.value).trim());
       const hasCustom =
         vals.slice(2).some((v) => v.length > 0) ||
         (vals[0].length > 0 && vals[0] !== defaults.l1) ||
@@ -1071,14 +1075,14 @@
       document.getElementById("season-mood").textContent = `心情：${meta.mood}`;
       document.getElementById("final-draft-title").textContent = `📝 ${meta.tabLabel.replace("：", "（")}）總草稿欄`;
       const ex = meta.lineExamples || {};
-      document.getElementById("line4-example").textContent = `例：${ex.line4 || `${meta.name}的歌聲是（${meta.heroIdeas[0]}），`}`;
+      document.getElementById("line4-example").textContent = `例：${ex.line4 || `${meta.name}的歌聲是${meta.heroIdeas[0]}，`} `;
       document.getElementById("line5-example").textContent = `例：${ex.line5 || ""}`;
       document.getElementById("line6-example").textContent = `例：${ex.line6 || ""}`;
       document.getElementById("line7-example").textContent = `例：${ex.line7 || ""}`;
 
       // 第 1、2 句 placeholders
       lineInputs[0].placeholder = `${meta.name}的歌聲從哪裡來？`;
-      lineInputs[1].placeholder = `歌聲乘著（${meta.wind}）而來，`;
+      lineInputs[1].placeholder = `歌聲乘著${meta.wind}而來，`;
 
       // 第 3 句：直式注音聲音卡片
       const soundGrid = document.getElementById("sound-grid");
@@ -1116,9 +1120,11 @@
       document.getElementById("example-poem").textContent = meta.exampleLines.join("\n");
       document.getElementById("example-tip").textContent = `💡 寫作巧思：${meta.exampleTip}`;
 
-      // 填入 1～7 句框與總草稿欄
-      draftTextarea.value = drafts[currentTab] || "";
-      populateLineInputsFromText(currentTab, drafts[currentTab] || "");
+      // 填入 1～7 句框與總草稿欄（總草稿去除舊括號避免學生照抄）
+      const cleanDraft = stripDraftParens(drafts[currentTab] || "");
+      drafts[currentTab] = cleanDraft;
+      draftTextarea.value = cleanDraft;
+      populateLineInputsFromText(currentTab, cleanDraft);
       updateSoundSelectionHighlight();
       updateCounter();
       renderFeedbackPanel();
@@ -1173,7 +1179,7 @@
         return;
       }
       ensureDefaultsBeforeFilling();
-      lineInputs[2].value = `（${soundWord}）——`;
+      lineInputs[2].value = `${soundWord}——`;
       combineLinesToDraft(currentTab);
       updateSoundSelectionHighlight();
       onDraftSynced(true);
@@ -1187,8 +1193,8 @@
       }
       const meta = CFG.SEASONS[currentTab];
       ensureDefaultsBeforeFilling();
-      const prefix = `${meta.name}的歌聲是（${heroText || ""}`;
-      lineInputs[3].value = `${prefix}），`;
+      const prefix = `${meta.name}的歌聲是${heroText || ""}`;
+      lineInputs[3].value = `${prefix}，`;
       combineLinesToDraft(currentTab);
       onDraftSynced(true);
       lineInputs[3].focus();
@@ -1213,7 +1219,7 @@
       const firstOpen = templateText.indexOf("（");
       const firstClose = templateText.indexOf("）", firstOpen + 1);
       if (firstOpen >= 0 && firstClose > firstOpen) {
-        inputEl.setSelectionRange(firstOpen + 1, firstClose);
+        inputEl.setSelectionRange(firstOpen, firstClose + 1);
       }
     }
 
@@ -1352,12 +1358,25 @@
       }
     });
 
+    function sanitizeDraftTextarea(syncInputs = false) {
+      const cleaned = stripDraftParens(draftTextarea.value);
+      if (cleaned !== draftTextarea.value) {
+        draftTextarea.value = cleaned;
+        drafts[currentTab] = cleaned;
+        if (syncInputs) populateLineInputsFromText(currentTab, cleaned);
+        updateCounter();
+      } else {
+        drafts[currentTab] = cleaned;
+      }
+      return cleaned;
+    }
+
     async function saveDraft(showAlert = false) {
       if (isLoadingStudent || !currentSeat) {
         if (showAlert && !currentSeat) alert("請先選擇你的座號（1～29 號）！");
         return;
       }
-      drafts[currentTab] = draftTextarea.value;
+      sanitizeDraftTextarea(false);
       saveLocalDraft(currentSeat, drafts);
       saveStatusEl.textContent = "⏳ 儲存中...";
 
@@ -1408,7 +1427,7 @@
       }
       if (isGrading) return;
 
-      drafts[currentTab] = draftTextarea.value;
+      sanitizeDraftTextarea(true);
       const trimmed = drafts[currentTab].trim();
       if (!trimmed) {
         alert("這一段的總草稿欄還是空的喔！先在上面選聲音或寫幾句再批改吧！");
@@ -1487,12 +1506,12 @@
     }
 
     function openPreviewModal() {
-      drafts[currentTab] = draftTextarea.value;
+      sanitizeDraftTextarea(true);
       const order = ["p1", "p2", "p3", "p4"];
       const combined = order
         .map((k) => {
           const name = CFG.SEASONS[k].name;
-          const body = (drafts[k] || "").trim() || `（${name}尚未填寫）`;
+          const body = stripDraftParens(drafts[k] || "").trim() || `（${name}尚未填寫）`;
           return body;
         })
         .join("\n\n");
@@ -1537,6 +1556,7 @@
       onDraftSynced(false);
     });
     draftTextarea.addEventListener("blur", () => {
+      sanitizeDraftTextarea(true);
       if (currentSeat) saveDraft(false);
     });
 

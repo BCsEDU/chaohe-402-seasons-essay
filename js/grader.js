@@ -21,7 +21,7 @@ window.SeasonsGrader = (function () {
 
   function isPlaceholder(val) {
     const raw = String(val || "");
-    if (/[（(](?:動詞|地點一|地點二|起點|終點|數量＋物品|誰|做什麼|誰＋在做什麼|一句話|做出什麼動作|快樂／清涼／希望|哪裡)[）)]/.test(raw)) {
+    if (/(?:[（(](?:動詞|地點一|地點二|起點|終點|數量＋物品|誰|做什麼|誰＋在做什麼|一句話|做出什麼動作|快樂／清涼／希望|哪裡)[）)]|動詞過|一路動詞|地點一|地點二|從起點|到終點|數量＋物品|誰在做什麼|誰＋在做什麼|大聲對誰說|「一句話|做出什麼動作|快樂／清涼／希望)/.test(raw)) {
       return true;
     }
     const cleaned = raw.replace(/[（()）　\s，。？！—\-]/g, "");
@@ -64,7 +64,7 @@ window.SeasonsGrader = (function () {
       ? `「${wrongWind}」是別的季節喔！${meta.name}要乘著「${meta.wind}」而來。`
       : windPassed
         ? `第 2 句正確搭配「${meta.wind}」`
-        : `第 2 句記得寫「歌聲乘著（${meta.wind}）而來，」`;
+        : `第 2 句記得寫「歌聲乘著${meta.wind}而來，」`;
 
     // 3. 第 3 句：狀聲詞
     const soundClean = stripOuterParens(line3.replace(/[—\-]+/g, "").replace(/[！!，,。.\s　]/g, ""));
