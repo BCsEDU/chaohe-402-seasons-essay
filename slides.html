@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>課堂投影簡報｜第八課《四季的歌聲》童詩寫作引導</title>
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --paper: #fcfbf7;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #cbd5e1;
+      --teal: #0f766e;
+      --teal-soft: #f0fdfa;
+      --amber: #d97706;
+      --amber-soft: #fffbeb;
+      --spring: #ec4899;
+      --spring-soft: #fdf2f8;
+      --summer: #f59e0b;
+      --summer-soft: #fffbeb;
+      --autumn: #ea580c;
+      --autumn-soft: #fff7ed;
+      --winter: #0284c7;
+      --winter-soft: #f0f9ff;
+      --ok: #16a34a;
+      --ok-soft: #dcfce7;
+      --bad: #dc2626;
+      --bad-soft: #fef2f2;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg-dark);
+      color: var(--text);
+      font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* 16:9 投影舞台容器 */
+    .stage-viewport {
+      position: fixed;
+      inset: 0 0 58px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 12px;
+    }
+
+    .deck-frame {
+      width: 1280px;
+      height: 720px;
+      background: var(--paper);
+      border-radius: 18px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+      position: relative;
+      transform-origin: center center;
+      flex-shrink: 0;
+    }
+
+    .slide {
+      display: none;
+      width: 1280px;
+      height: 720px;
+      padding: 38px 50px 34px;
+      flex-direction: column;
+      position: relative;
+      background: var(--paper);
+    }
+
+    .slide.active {
+      display: flex;
+      animation: fadeSlide 0.22s ease-out;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0.4; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 共用投影片標題區 */
+    .slide-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .slide-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--teal);
+      color: #fff;
+      font-size: 17px;
+      font-weight: 900;
+      padding: 5px 16px;
+      border-radius: 999px;
+      letter-spacing: 0.5px;
+    }
+
+    .slide-kicker.amber { background: #b45309; }
+    .slide-kicker.blue { background: #1d4ed8; }
+    .slide-kicker.rose { background: #be185d; }
+
+    .slide-page-badge {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--muted);
+      background: #e2e8f0;
+      padding: 4px 14px;
+      border-radius: 999px;
+    }
+
+    h2.slide-h2 {
+      font-size: 36px;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.25;
+      margin-bottom: 18px;
+      flex-shrink: 0;
+    }
+
+    .accent-teal { color: var(--teal); }
+    .accent-amber { color: #b45309; }
+    .accent-rose { color: #db2777; }
+
+    .slide-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    /* Slide 1 封面 */
+    .cover-slide {
+      background: linear-gradient(135deg, #f0fdfa 0%, #fffbeb 52%, #fdf2f8 100%);
+      justify-content: space-between;
+      padding: 48px 58px;
+    }
+
+    .cover-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #0f766e;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 900;
+      padding: 8px 22px;
+      border-radius: 999px;
+      width: fit-content;
+    }
+
+    .cover-main {
+      margin: 12px 0;
+    }
+
+    .cover-title {
+      font-size: 74px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #0f172a;
+      line-height: 1.15;
+    }
+
+    .cover-sub {
+      font-size: 31px;
+      font-weight: 800;
+      color: #0f766e;
+      margin-top: 14px;
+    }
+
+    .cover-desc {
+      font-size: 21px;
+      color: #334155;
+      font-weight: 700;
+      margin-top: 12px;
+    }
+
+    .cover-roadmap {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .roadmap-card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 2px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 18px 20px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+    }
+
+    .roadmap-step {
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--teal);
+      margin-bottom: 4px;
+    }
+
+    .roadmap-title {
+      font-size: 23px;
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+
+    .roadmap-text {
+      font-size: 17px;
+      font-weight: 700;
+      color: #475569;
+      line-height: 1.45;
+    }
+
+    /* 通用網格與卡片 */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border: 2px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 20px 22px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card.teal { background: #f0fdfa; border-color: #99f6e4; }
+    .card.amber { background: #fffbeb; border-color: #fde68a; }
+    .card.rose { background: #fdf2f8; border-color: #fbcfe8; }
+    .card.blue { background: #f0f9ff; border-color: #bae6fd; }
+    .card.red { background: #fef2f2; border-color: #fecaca; }
+    .card.green { background: #f0fdf4; border-color: #bbf7d0; }
+
+    .card-title {
+      font-size: 24px;
+      font-weight: 900;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .focus-banner {
+      background: #0f766e;
+      color: #fff;
+      border-radius: 14px;
+      padding: 16px 24px;
+      font-size: 23px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .big-quote {
+      background: #fff;
+      border-left: 6px solid var(--teal);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 21px;
+      font-weight: 800;
+      line-height: 1.6;
+      color: #1e293b;
+      margin-top: 10px;
+    }
+
+    /* 第 3 頁：季節風向卡 */
+    .wind-card {
+      border-radius: 16px;
+      padding: 16px 20px;
+      border: 2.5px solid;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .wind-card.spring { background: var(--spring-soft); border-color: #f9a8d4; }
+    .wind-card.summer { background: var(--summer-soft); border-color: #fcd34d; }
+    .wind-card.autumn { background: var(--autumn-soft); border-color: #fdba74; }
+    .wind-card.winter { background: var(--winter-soft); border-color: #7dd3fc; }
+
+    .wind-season { font-size: 26px; font-weight: 900; }
+    .wind-dir {
+      font-size: 28px;
+      font-weight: 900;
+      background: #fff;
+      padding: 6px 18px;
+      border-radius: 12px;
+      border: 2px solid rgba(15, 23, 42, 0.12);
+    }
+
+    /* 第 4 頁：互動逐句拆解 */
+    .poem-box {
+      background: #fff;
+      border: 2.5px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .poem-line-btn {
+      text-align: left;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 22px;
+      font-weight: 800;
+      color: #1e293b;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+
+    .poem-line-btn:hover { background: #f1f5f9; border-color: #94a3b8; }
+    .poem-line-btn.revealed { background: #fff; border-color: #99f6e4; }
+    .poem-line-btn.active {
+      background: #f0fdfa;
+      border-color: #0f766e;
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.16);
+      transform: translateX(4px);
+    }
+
+    .line-idx {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #cbd5e1;
+      color: #0f172a;
+      font-size: 16px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .poem-line-btn.revealed .line-idx,
+    .poem-line-btn.active .line-idx {
+      background: var(--teal);
+      color: #fff;
+    }
+
+    .rule-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .rule-row {
+      background: #f1f5f9;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .rule-row.dim { opacity: 0.32; }
+    .rule-row.revealed { background: #fff; border-color: #cbd5e1; opacity: 1; }
+    .rule-row.active {
+      background: #fffbeb;
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+      opacity: 1;
+    }
+
+    .rule-tag {
+      font-size: 16px;
+      font-weight: 900;
+      color: #fff;
+      background: #64748b;
+      padding: 3px 10px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+    .rule-row.revealed .rule-tag,
+    .rule-row.active .rule-tag { background: #0f766e; }
+    .rule-row.active .rule-tag { background: #d97706; }
+
+    .rule-desc {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f172a;
+      flex: 1;
+    }
+
+    .slide-toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .action-pill {
+      border: 2px solid #0f766e;
+      background: #0f766e;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 900;
+      padding: 6px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .action-pill:hover { background: #115e59; }
+    .action-pill.ghost {
+      background: #fff;
+      color: #0f766e;
+    }
+    .action-pill.ghost:hover { background: #f0fdfa; }
+
+    /* 直式注音樣式（與學生寫作網站完全一致） */
+    .sound-showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .sound-card-mini {
+      background: #fff;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .zy-word-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .zy-pair {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .zy-han {
+      font-size: 28px;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.1;
+    }
+    .zy-bopo {
+      display: inline-flex;
+      align-items: center;
+      gap: 1px;
+      font-family: "Bopomofo", "PingFang TC", "Noto Sans TC", sans-serif;
+      color: #0f766e;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .zy-syms {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      line-height: 1.05;
+    }
+    .zy-tone {
+      font-size: 13px;
+      line-height: 1;
+      align-self: flex-end;
+      margin-bottom: 2px;
+    }
+    .zy-punct {
+      font-size: 24px;
+      font-weight: 900;
+      color: #475569;
+    }
+    .sound-tag-caption {
+      font-size: 14px;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .word-chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .word-chip {
+      background: #fff;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 6px 14px;
+      font-size: 21px;
+      font-weight: 900;
+      color: #0f172a;
+    }
+    .word-chip.literary {
+      background: #fffbeb;
+      border-color: #fcd34d;
+      color: #92400e;
+    }
+
+    /* 第 8 頁：四季範文共賞切換 */
+    .season-tabs-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-shrink: 0;
+    }
+    .s-tab-btn {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 2.5px solid #cbd5e1;
+      background: #fff;
+      font-size: 22px;
+      font-weight: 900;
+      cursor: pointer;
+      font-family: inherit;
+      color: #334155;
+      transition: all 0.15s;
+    }
+    .s-tab-btn.active[data-sk="p1"] { background: var(--spring-soft); border-color: var(--spring); color: #9d174d; }
+    .s-tab-btn.active[data-sk="p2"] { background: var(--summer-soft); border-color: var(--summer); color: #92400e; }
+    .s-tab-btn.active[data-sk="p3"] { background: var(--autumn-soft); border-color: var(--autumn); color: #9a3412; }
+    .s-tab-btn.active[data-sk="p4"] { background: var(--winter-soft); border-color: var(--winter); color: #075985; }
+
+    .poem-display-line {
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.65;
+      color: #0f172a;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .poem-display-num {
+      font-size: 15px;
+      font-weight: 900;
+      color: #fff;
+      background: #64748b;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* 第 9 頁：抓蟲挑戰 */
+    .quiz-card {
+      background: #fff;
+      border: 2.5px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .quiz-bad {
+      background: #fef2f2;
+      border: 2px solid #fecaca;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 23px;
+      font-weight: 900;
+      color: #991b1b;
+    }
+    .quiz-answer {
+      background: #f0fdf4;
+      border: 2px solid #86efac;
+      border-radius: 12px;
+      padding: 14px;
+      display: none;
+    }
+    .quiz-answer.open { display: block; }
+    .quiz-answer-title {
+      font-size: 16px;
+      font-weight: 900;
+      color: #166534;
+      margin-bottom: 4px;
+    }
+    .quiz-answer-text {
+      font-size: 21px;
+      font-weight: 900;
+      color: #14532d;
+      line-height: 1.45;
+    }
+
+    /* 第 10、11 頁：網站模擬視覺塊 */
+    .ui-mock {
+      background: #fff;
+      border: 2.5px solid #94a3b8;
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .mock-bar {
+      background: #fffbeb;
+      border: 2px solid #fde68a;
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-size: 18px;
+      font-weight: 900;
+      color: #92400e;
+    }
+    .mock-step {
+      background: #f8fafc;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 10px 14px;
+    }
+    .mock-badge {
+      display: inline-block;
+      background: #ec4899;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+      padding: 2px 9px;
+      border-radius: 999px;
+      margin-right: 6px;
+    }
+    .mock-input {
+      margin-top: 6px;
+      background: #fff;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .list-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      justify-content: center;
+    }
+    .list-step-item {
+      background: #fff;
+      border: 2px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .step-num-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: #fff;
+      font-size: 20px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* 第 12 頁：QR Code 開寫 */
+    .qr-panel {
+      background: #fff;
+      border: 3px solid var(--teal);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      text-align: center;
+    }
+    .qr-panel img {
+      width: 260px;
+      height: 260px;
+      image-rendering: pixelated;
+      border: 10px solid #f0fdfa;
+      border-radius: 14px;
+    }
+    .url-box {
+      background: #f1f5f9;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 8px 16px;
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f766e;
+      word-break: break-all;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 4px;
+    }
+    .cta-btn {
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 900;
+      color: #fff;
+      background: var(--teal);
+    }
+    .cta-btn.secondary {
+      background: #1e40af;
+    }
+
+    /* 底部簡報導覽列 */
+    .presenter-hud {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 58px;
+      background: #1e293b;
+      border-top: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      gap: 12px;
+      z-index: 100;
+      color: #f8fafc;
+    }
+
+    .hud-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hud-btn {
+      border: 1px solid #475569;
+      background: #334155;
+      color: #f8fafc;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .hud-btn:hover { background: #475569; }
+    .hud-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .hud-btn.primary { background: #0f766e; border-color: #14b8a6; }
+    .hud-btn.primary:hover { background: #0d9488; }
+
+    .slide-select {
+      background: #0f172a;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      max-width: 280px;
+    }
+
+    .dots-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dot-btn {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: none;
+      background: #475569;
+      cursor: pointer;
+      padding: 0;
+      transition: all 0.15s;
+    }
+    .dot-btn.active {
+      width: 24px;
+      border-radius: 999px;
+      background: #2dd4bf;
+    }
+
+    @media (max-width: 900px) {
+      .dots-bar { display: none; }
+      .hud-hide-sm { display: none; }
+    }
+
+    /* 列印／匯出 PDF 專用：每頁一張橫向 16:9 投影片 */
+    @media print {
+      @page { size: landscape; margin: 0; }
+      html, body {
+        width: auto;
+        height: auto;
+        overflow: visible;
+        background: #fff;
+      }
+      .presenter-hud { display: none !important; }
+      .stage-viewport {
+        position: static;
+        display: block;
+        padding: 0;
+        overflow: visible;
+      }
+      .deck-frame {
+        width: auto;
+        height: auto;
+        transform: none !important;
+        box-shadow: none;
+        border-radius: 0;
+        background: #fff;
+      }
+      .slide {
+        display: flex !important;
+        width: 100vw;
+        height: 100vh;
+        page-break-after: always;
+        break-after: page;
+        animation: none !important;
+      }
+      .slide:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+      .quiz-answer { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage-viewport" id="stage-viewport">
+    <div class="deck-frame" id="deck-frame">
+
+      <!-- Slide 1：封面 -->
+      <section class="slide cover-slide active" data-title="1. 封面：四季的歌聲寫作課">
+        <div class="cover-pill">📖 南一版國語四上 · 第八課習作 P.63 × 寫作學習單</div>
+        <div class="cover-main">
+          <h1 class="cover-title">《四季的歌聲》童詩寫作課</h1>
+          <div class="cover-sub">跟著詩人找聲音 ➔ 解鎖 7 句結構密碼 ➔ 上網站寫作＋AI 老師給建議</div>
+          <div class="cover-desc">目標：用時間順序（春 ➔ 夏 ➔ 秋 ➔ 冬），寫出有聲音、有動作、更有畫面的四季童詩！</div>
+        </div>
+        <div class="cover-roadmap">
+          <div class="roadmap-card">
+            <div class="roadmap-step">STEP 1 · 找靈感</div>
+            <div class="roadmap-title">🔍 四季觀察家</div>
+            <div class="roadmap-text">觀察四季裡誰在唱歌？寫出「誰＋在做什麼」與發出的聲音。</div>
+          </div>
+          <div class="roadmap-card">
+            <div class="roadmap-step">STEP 2 · 學結構</div>
+            <div class="roadmap-title">🍱 句子便當盒</div>
+            <div class="roadmap-text">把觀察放進 7 句童詩魔法公式，加上移動地點與具體聯想。</div>
+          </div>
+          <div class="roadmap-card">
+            <div class="roadmap-step">STEP 3 · 上線創作</div>
+            <div class="roadmap-title">💻 寫作網＋AI 批改</div>
+            <div class="roadmap-text">分句寫好合成無括號「總草稿欄」，即時健檢＋秉辰師分身給建議！</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 2：學習重點與雙關卡任務 -->
+      <section class="slide" data-title="2. 學習重點：兩大闖關任務">
+        <div class="slide-top">
+          <span class="slide-kicker">學習目標與闖關單</span>
+          <span class="slide-page-badge">2 / 12</span>
+        </div>
+        <h2 class="slide-h2">寫《四季的歌聲》前，先完成哪 <span class="accent-teal">兩個關卡</span>？</h2>
+        <div class="slide-body">
+          <div class="focus-banner">
+            <span>🎯</span>
+            <span>學習重點：依照「時間順序」（春 ➔ 夏 ➔ 秋 ➔ 冬），結合觀察、描寫與想像，學會仿寫童詩。</span>
+          </div>
+          <div class="grid-2">
+            <div class="card amber">
+              <div class="card-title" style="color:#b45309;">🌟 第一關：四季觀察家</div>
+              <p style="font-size:21px;font-weight:700;color:#334155;line-height:1.6;">
+                想一想：春、夏、秋、冬裡，<strong>誰會唱歌呢？</strong><br>
+                仔細觀察，記下兩個重點：
+              </p>
+              <div class="big-quote" style="border-left-color:#d97706;">
+                ① 歌聲（誰＋在做什麼）：<strong>蜜蜂採蜜</strong><br>
+                ② 聲音描寫（狀聲詞）：<strong>嗡嗡嗡</strong>
+              </div>
+              <p style="font-size:18px;font-weight:700;color:#64748b;margin-top:auto;">
+                ※ 不能只寫名詞，要有主角「正在做什麼」的動作！
+              </p>
+            </div>
+            <div class="card teal">
+              <div class="card-title" style="color:#0f766e;">🍱 第二關：句子便當盒</div>
+              <p style="font-size:21px;font-weight:700;color:#334155;line-height:1.6;">
+                從第一關選出四季的代表歌聲，發揮聯想與想像，寫出歌聲是怎麼來的：
+              </p>
+              <div class="big-quote">
+                用 <strong>7 句結構密碼</strong> 串起來：<br>
+                問句 ➔ 風向 ➔ 聲音 ➔ 主角 ➔ 移動 ➔ 變魔術 ➔ 收尾！
+              </div>
+              <p style="font-size:18px;font-weight:700;color:#0f766e;margin-top:auto;">
+                ※ 等一下的寫作網站，就是依照這 7 句一格一格帶你完成！
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 3：第 1、2 句密碼（季節＋風向＋分開換行） -->
+      <section class="slide" data-title="3. 第 1、2 句：開頭問句與風向密碼">
+        <div class="slide-top">
+          <span class="slide-kicker">結構密碼 1～2 句</span>
+          <span class="slide-page-badge">3 / 12</span>
+        </div>
+        <h2 class="slide-h2">第 1、2 句：<span class="accent-teal">問對季節</span> ＋ <span class="accent-amber">吹對風向</span></h2>
+        <div class="slide-body">
+          <div class="grid-2">
+            <div class="card" style="justify-content:space-between;">
+              <div>
+                <div class="card-title">📝 開頭兩句的固定寫法</div>
+                <div style="background:#f8fafc;border:2px solid #cbd5e1;border-radius:12px;padding:16px 18px;margin-top:10px;">
+                  <div style="font-size:16px;font-weight:900;color:#0f766e;margin-bottom:4px;">第 1 句｜點出季節（設問開頭）</div>
+                  <div style="font-size:28px;font-weight:900;color:#0f172a;">春天的歌聲從哪裡來？</div>
+                </div>
+                <div style="background:#f8fafc;border:2px solid #cbd5e1;border-radius:12px;padding:16px 18px;margin-top:14px;">
+                  <div style="font-size:16px;font-weight:900;color:#b45309;margin-bottom:4px;">第 2 句｜說明歌聲從何處乘風而來</div>
+                  <div style="font-size:28px;font-weight:900;color:#0f172a;">歌聲乘著<span style="color:#db2777;text-decoration:underline;">東風</span>而來，</div>
+                </div>
+              </div>
+              <div style="background:#fef3c7;border:2px solid #fcd34d;border-radius:12px;padding:14px 16px;font-size:19px;font-weight:800;color:#92400e;">
+                💡 寫作排版提醒：新詩一行一句，第 1 句與第 2 句要<strong>分開換行寫</strong>，而且寫成草稿時<strong>不要加（、）括號</strong>！
+              </div>
+            </div>
+            <div class="card teal" style="justify-content:space-between;">
+              <div class="card-title" style="color:#0f766e;">🧭 四季風向配對密碼（記口訣：東南西北！）</div>
+              <div class="wind-card spring">
+                <span class="wind-season">🌸 第一段：春天</span>
+                <span class="wind-dir" style="color:#db2777;">東風</span>
+              </div>
+              <div class="wind-card summer">
+                <span class="wind-season">☀️ 第二段：夏天</span>
+                <span class="wind-dir" style="color:#d97706;">南風</span>
+              </div>
+              <div class="wind-card autumn">
+                <span class="wind-season">🍂 第三段：秋天</span>
+                <span class="wind-dir" style="color:#ea580c;">西風</span>
+              </div>
+              <div class="wind-card winter">
+                <span class="wind-season">❄️ 第四段：冬天</span>
+                <span class="wind-dir" style="color:#0284c7;">北風</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 4：互動逐句拆解示範詩《蜜蜂採蜜》 -->
+      <section class="slide" data-title="4. 核心拆解：蜜蜂採蜜 7 句密碼">
+        <div class="slide-top">
+          <span class="slide-kicker">核心概念｜互動拆解</span>
+          <div class="slide-toolbar">
+            <button type="button" class="action-pill" onclick="nextRevealLine()">▶ 逐句揭示下一句</button>
+            <button type="button" class="action-pill ghost" onclick="revealAllLines()">全部揭示</button>
+            <button type="button" class="action-pill ghost" onclick="resetRevealLines()">重設</button>
+            <span class="slide-page-badge">4 / 12</span>
+          </div>
+        </div>
+        <h2 class="slide-h2">讀讀《蜜蜂採蜜》：每一句各自負起什麼任務？（點句子亮燈）</h2>
+        <div class="slide-body">
+          <div class="grid-2" style="grid-template-columns: 1fr 1.15fr;">
+            <div class="poem-box" id="reveal-poem-list">
+              <button type="button" class="poem-line-btn active" onclick="focusRevealLine(0)"><span class="line-idx">1</span>春天的歌聲從哪裡來？</button>
+              <button type="button" class="poem-line-btn" onclick="focusRevealLine(1)"><span class="line-idx">2</span>歌聲乘著東風而來，</button>
+              <button type="button" class="poem-line-btn" onclick="focusRevealLine(2)"><span class="line-idx">3</span>嗡嗡嗡——</button>
+              <button type="button" class="poem-line-btn" onclick="focusRevealLine(3)"><span class="line-idx">4</span>春天的歌聲是蜜蜂採蜜，</button>
+              <button type="button" class="poem-line-btn" onclick="focusRevealLine(4)"><span class="line-idx">5</span>飛過花叢，越過山谷，</button>
+              <button type="button" class="poem-line-btn" onclick="focusRevealLine(5)"><span class="line-idx">6</span>帶著一支一支的大喇叭，</button>
+              <button type="button" class="poem-line-btn" onclick="focusRevealLine(6)"><span class="line-idx">7</span>大聲對花兒說好久不見。</button>
+            </div>
+            <div class="rule-stack" id="reveal-rule-list">
+              <div class="rule-row active" onclick="focusRevealLine(0)">
+                <span class="rule-tag">第 1 句｜點出季節</span>
+                <span class="rule-desc">用問句開頭，點出寫的是哪一個季節</span>
+              </div>
+              <div class="rule-row dim" onclick="focusRevealLine(1)">
+                <span class="rule-tag">第 2 句｜搭配風向</span>
+                <span class="rule-desc">說明歌聲乘著哪一種季節風吹過來</span>
+              </div>
+              <div class="rule-row dim" onclick="focusRevealLine(2)">
+                <span class="rule-tag">第 3 句｜描述聲音</span>
+                <span class="rule-desc">用「狀聲詞」摹擬聲音，後面加破折號「——」</span>
+              </div>
+              <div class="rule-row dim" onclick="focusRevealLine(3)">
+                <span class="rule-tag">第 4 句｜揭曉主角</span>
+                <span class="rule-desc">寫出「誰＋在做什麼」（不能只寫靜態名詞！）</span>
+              </div>
+              <div class="rule-row dim" onclick="focusRevealLine(4)">
+                <span class="rule-tag">第 5 句｜動起來</span>
+                <span class="rule-desc">寫兩個動作或兩個地點，讓畫面有移動感</span>
+              </div>
+              <div class="rule-row dim" onclick="focusRevealLine(5)">
+                <span class="rule-tag">第 6 句｜變魔術</span>
+                <span class="rule-desc">把聲音聯想成看得到的物品（例：蜜蜂嘴變大喇叭）</span>
+              </div>
+              <div class="rule-row dim" onclick="focusRevealLine(6)">
+                <span class="rule-tag">第 7 句｜挑一招收尾</span>
+                <span class="rule-desc">用說話、反應或送禮收尾，最後加「。」或「！」</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 5：第 3 句狀聲詞＋直式注音百寶箱 -->
+      <section class="slide" data-title="5. 第 3 句：直式注音狀聲詞百寶箱">
+        <div class="slide-top">
+          <span class="slide-kicker rose">結構密碼 第 3 句</span>
+          <span class="slide-page-badge">5 / 12</span>
+        </div>
+        <h2 class="slide-h2">第 3 句：狀聲詞怎麼寫才像歌聲？（對照直式注音）</h2>
+        <div class="slide-body">
+          <div class="grid-2" style="grid-template-columns: 1.15fr 0.85fr;">
+            <div class="card rose">
+              <div class="card-title" style="color:#be185d;">🔔 單字聲音：要寫「3 次」更有節奏！</div>
+              <p style="font-size:18px;font-weight:700;color:#475569;">單一個字（如「沙」）寫 1～2 次太短了，連續唱 3 次最像歌聲：</p>
+              <div class="sound-showcase-grid" id="slide5-triples"></div>
+              <div style="margin-top:auto;background:#fff;border:2px solid #f9a8d4;border-radius:10px;padding:10px 14px;font-size:19px;font-weight:900;color:#9d174d;">
+                ✨ 黃金標點：聲音後面一定要加上長長的「破折號 ——」（例：沙沙沙——）
+              </div>
+            </div>
+            <div class="card amber" style="justify-content:space-between;">
+              <div>
+                <div class="card-title" style="color:#b45309;">🎶 也可以選「四字疊字」或「文言疊字」</div>
+                <div style="font-size:17px;font-weight:800;color:#475569;margin-top:6px;">① 四字節奏狀聲詞：</div>
+                <div class="word-chip-list">
+                  <span class="word-chip">滴滴答答</span>
+                  <span class="word-chip">叮咚叮咚</span>
+                  <span class="word-chip">嘩啦嘩啦</span>
+                  <span class="word-chip">劈里啪啦</span>
+                  <span class="word-chip">吱吱喳喳</span>
+                  <span class="word-chip">撲通撲通</span>
+                </div>
+                <div style="font-size:17px;font-weight:800;color:#92400e;margin-top:16px;">② 課本與學習單收錄的「文言二字疊字」（只寫 2 字就過關）：</div>
+                <div class="word-chip-list">
+                  <span class="word-chip literary">蕭蕭</span>
+                  <span class="word-chip literary">颯颯</span>
+                  <span class="word-chip literary">淙淙</span>
+                  <span class="word-chip literary">潺潺</span>
+                  <span class="word-chip literary">濺濺</span>
+                  <span class="word-chip literary">瀝瀝</span>
+                </div>
+              </div>
+              <div style="background:#fff;border:2px solid #fde68a;border-radius:10px;padding:10px 14px;font-size:17px;font-weight:800;color:#92400e;">
+                💡 網站的聲音按鈕都有附上直式注音，忘記國字怎麼念也能直接點！
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 6：第 4 句大陷阱（誰＋在做什麼） -->
+      <section class="slide" data-title="6. 第 4 句：避開兩個寫作大地雷">
+        <div class="slide-top">
+          <span class="slide-kicker amber">結構密碼 第 4 句</span>
+          <span class="slide-page-badge">6 / 12</span>
+        </div>
+        <h2 class="slide-h2">第 4 句關鍵：<span class="accent-amber">誰 ＋ 在做什麼</span>（避開 2 大地雷！）</h2>
+        <div class="slide-body">
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title" style="color:#dc2626;">💣 地雷一：只寫「名詞／聲音」，沒有動作！</div>
+              <div class="quiz-bad" style="margin-top:8px;">
+                ❌ 春天的歌聲是小鳥<br>
+                ❌ 夏天的歌聲是打雷的聲音
+              </div>
+              <p style="font-size:19px;font-weight:700;color:#475569;margin:14px 0;">
+                問題出在哪？「小鳥」在幹嘛？「的聲音」不會自己動！要把主角變成小演員：
+              </p>
+              <div class="quiz-answer open" style="margin-top:auto;">
+                <div class="quiz-answer-title">✅ 這樣寫瞬間有畫面：</div>
+                <div class="quiz-answer-text">
+                  春天的歌聲是<strong>小鳥開早會</strong>，<br>
+                  夏天的歌聲是<strong>雷公用力打大鼓</strong>，
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title" style="color:#0284c7;">💣 地雷二：冬天重複寫「北風」！</div>
+              <div class="quiz-bad" style="margin-top:8px;">
+                第 2 句：歌聲乘著<strong>北風</strong>而來，<br>
+                ❌ 第 4 句：冬天的歌聲是<strong>北風吹起</strong>，
+              </div>
+              <p style="font-size:19px;font-weight:700;color:#475569;margin:14px 0;">
+                第 2 句已經用過「北風」了，第 4 句換別的冬天主角，全詩才不會一直重複喔！
+              </p>
+              <div class="quiz-answer open" style="background:#f0f9ff;border-color:#7dd3fc;margin-top:auto;">
+                <div class="quiz-answer-title" style="color:#0369a1;">✅ 冬天可以換誰當主角？</div>
+                <div class="quiz-answer-text" style="color:#075985;">
+                  <strong>滑雪板</strong>衝下白雪山頭 / <strong>鞭炮</strong>在巷口跳起舞<br>
+                  <strong>大樹</strong>在山頭抖身體 / <strong>熱湯</strong>在鍋裡滾起來
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:16px;background:#fef3c7;border:2px solid #fcd34d;border-radius:12px;padding:12px 20px;font-size:20px;font-weight:900;color:#92400e;flex-shrink:0;">
+            ✨ 預告：網站第 4 句只提供「純主角名詞」（如：小鳥、西北雨），不先幫你想動作——點完按鈕記得接著寫出牠在做什麼！
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 7：第 5～7 句三大魔法公式 -->
+      <section class="slide" data-title="7. 第 5～7 句：讓童詩長出畫面的三大公式">
+        <div class="slide-top">
+          <span class="slide-kicker">結構密碼 5～7 句</span>
+          <span class="slide-page-badge">7 / 12</span>
+        </div>
+        <h2 class="slide-h2">最後三句怎麼寫？套進 <span class="accent-teal">三大魔法公式</span> 就對了！</h2>
+        <div class="slide-body">
+          <div class="grid-3">
+            <div class="card amber" style="justify-content:space-between;">
+              <div>
+                <div class="card-title" style="color:#b45309;">🏃 第 5 句｜動起來</div>
+                <p style="font-size:18px;font-weight:800;color:#475569;margin-bottom:10px;">寫出<strong>兩個動作</strong>或<strong>兩個地點</strong></p>
+                <div class="big-quote" style="border-left-color:#f59e0b;font-size:19px;">
+                  <strong>句型 A</strong>：⋯過⋯，⋯過⋯，<br>
+                  <span style="font-size:16px;color:#64748b;">（※「過」可換成進、上、到）</span><br>
+                  <strong>句型 B</strong>：從⋯出發，一路⋯到⋯，
+                </div>
+              </div>
+              <div style="background:#fef3c7;border-radius:10px;padding:12px 14px;font-size:19px;font-weight:900;color:#92400e;">
+                💡 例：飛過花園，穿過大樹，<br>
+                💡 例：從枝頭出發，一路飄到操場，
+              </div>
+            </div>
+            <div class="card teal" style="justify-content:space-between;">
+              <div>
+                <div class="card-title" style="color:#0f766e;">🪄 第 6 句｜變魔術</div>
+                <p style="font-size:18px;font-weight:800;color:#475569;margin-bottom:10px;">把聲音聯想成<strong>看得到的畫面</strong></p>
+                <div class="big-quote" style="font-size:19px;">
+                  <strong>句型 A</strong>：帶著（數量＋物品），<br>
+                  <strong>句型 B</strong>：像（誰）在（做什麼），<br>
+                  <strong>句型 C</strong>：變成（數量＋物品），
+                </div>
+              </div>
+              <div style="background:#ccfbf1;border-radius:10px;padding:12px 14px;font-size:19px;font-weight:900;color:#115e59;">
+                💡 例：帶著一枝可愛的小喇叭，<br>
+                💡 例：像勇敢的選手在比賽，
+              </div>
+            </div>
+            <div class="card blue" style="justify-content:space-between;">
+              <div>
+                <div class="card-title" style="color:#0369a1;">🎁 第 7 句｜挑一招收尾</div>
+                <p style="font-size:18px;font-weight:800;color:#475569;margin-bottom:10px;">留下感受，最後記得加<strong>「。」或「！」</strong></p>
+                <div class="big-quote" style="border-left-color:#0284c7;font-size:19px;">
+                  ① <strong>說話型</strong>：大聲對誰說：「⋯。」<br>
+                  ② <strong>反應型</strong>：嚇得／逗得誰⋯⋯。<br>
+                  ③ <strong>送禮型</strong>：把（心情）送進（哪裡）。
+                </div>
+              </div>
+              <div style="background:#e0f2fe;border-radius:10px;padding:12px 14px;font-size:19px;font-weight:900;color:#075985;">
+                💡 例：大聲對大家說：「春天來了！」<br>
+                💡 例：把溫暖與希望送進人們心中。
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 8：四季範文共賞（可互動切換） -->
+      <section class="slide" data-title="8. 四季範文共賞：讀亮點學巧思">
+        <div class="slide-top">
+          <span class="slide-kicker blue">範文共賞｜互動切換</span>
+          <span class="slide-page-badge">8 / 12</span>
+        </div>
+        <h2 class="slide-h2">老師範文怎麼寫才生動？點季節一起看巧思！</h2>
+        <div class="slide-body">
+          <div class="season-tabs-row" id="slide8-tabs">
+            <button type="button" class="s-tab-btn active" data-sk="p1" onclick="selectSlide8Season('p1')">🌸 春天</button>
+            <button type="button" class="s-tab-btn" data-sk="p2" onclick="selectSlide8Season('p2')">☀️ 夏天</button>
+            <button type="button" class="s-tab-btn" data-sk="p3" onclick="selectSlide8Season('p3')">🍂 秋天</button>
+            <button type="button" class="s-tab-btn" data-sk="p4" onclick="selectSlide8Season('p4')">❄️ 冬天</button>
+          </div>
+          <div class="grid-2" style="grid-template-columns: 1.15fr 0.85fr;">
+            <div class="card" id="slide8-poem-card" style="justify-content:center;gap:6px;"></div>
+            <div class="card teal" style="justify-content:space-between;">
+              <div>
+                <div class="card-title" style="color:#0f766e;" id="slide8-analysis-title">🔍 寫作巧思解析</div>
+                <p id="slide8-analysis-text" style="font-size:22px;font-weight:800;color:#1e293b;line-height:1.65;margin-top:10px;"></p>
+              </div>
+              <div id="slide8-compare-box" style="background:#fff;border:2px solid #99f6e4;border-radius:12px;padding:14px 16px;font-size:19px;font-weight:800;color:#0f766e;line-height:1.55;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 9：課堂搶答抓蟲挑戰 -->
+      <section class="slide" data-title="9. 隨堂抓蟲挑戰：你會怎麼改？">
+        <div class="slide-top">
+          <span class="slide-kicker rose">隨堂快問快答</span>
+          <div class="slide-toolbar">
+            <button type="button" class="action-pill" onclick="revealAllQuiz()">👀 全部揭曉改法</button>
+            <button type="button" class="action-pill ghost" onclick="resetQuiz()">重設</button>
+            <span class="slide-page-badge">9 / 12</span>
+          </div>
+        </div>
+        <h2 class="slide-h2">同學交來這 3 句草稿，你幫他抓到哪裡卡住了？</h2>
+        <div class="slide-body">
+          <div class="grid-3">
+            <div class="quiz-card">
+              <div>
+                <div style="font-size:17px;font-weight:900;color:#64748b;margin-bottom:8px;">挑戰 1｜冬天的第 2 句</div>
+                <div class="quiz-bad">「歌聲乘著東風而來，」</div>
+              </div>
+              <div class="quiz-answer" id="quiz-ans-0">
+                <div class="quiz-answer-title">✅ 抓到蟲了！風向配錯季節：</div>
+                <div class="quiz-answer-text">東風是春天的風！冬天要改成：<br><strong>「歌聲乘著北風而來，」</strong></div>
+              </div>
+              <button type="button" class="action-pill" onclick="toggleQuiz(0)">🔍 揭曉改法</button>
+            </div>
+            <div class="quiz-card">
+              <div>
+                <div style="font-size:17px;font-weight:900;color:#64748b;margin-bottom:8px;">挑戰 2｜第 3 句狀聲詞</div>
+                <div class="quiz-bad">「啾——」<br><span style="font-size:17px;font-weight:700;">或「叮叮——」</span></div>
+              </div>
+              <div class="quiz-answer" id="quiz-ans-1">
+                <div class="quiz-answer-title">✅ 抓到蟲了！單字沒唱 3 次：</div>
+                <div class="quiz-answer-text">單字聲音要寫 3 次才有歌聲節奏！改成：<br><strong>「啾啾啾——」／「叮叮叮——」</strong></div>
+              </div>
+              <button type="button" class="action-pill" onclick="toggleQuiz(1)">🔍 揭曉改法</button>
+            </div>
+            <div class="quiz-card">
+              <div>
+                <div style="font-size:17px;font-weight:900;color:#64748b;margin-bottom:8px;">挑戰 3｜夏天的第 4 句</div>
+                <div class="quiz-bad">「夏天的歌聲是雷雨的聲音，」</div>
+              </div>
+              <div class="quiz-answer" id="quiz-ans-2">
+                <div class="quiz-answer-title">✅ 抓到蟲了！名詞尾巴沒動作：</div>
+                <div class="quiz-answer-text">「〇〇的聲音」太靜態！寫誰在做什麼：<br><strong>「夏天的歌聲是西北雨跳踢踏舞，」</strong></div>
+              </div>
+              <button type="button" class="action-pill" onclick="toggleQuiz(2)">🔍 揭曉改法</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 10：進入寫作網站導覽（上） -->
+      <section class="slide" data-title="10. 網站操作指南（上）：選座號與分句寫作">
+        <div class="slide-top">
+          <span class="slide-kicker">實作導入（上）</span>
+          <span class="slide-page-badge">10 / 12</span>
+        </div>
+        <h2 class="slide-h2">等一下進《四季的歌聲》寫作網站，跟著這 3 步做！</h2>
+        <div class="slide-body">
+          <div class="grid-2" style="grid-template-columns: 1.05fr 0.95fr;">
+            <div class="ui-mock">
+              <div class="mock-bar">🙋 請選擇你的座號（1～29 號）： [ 選好才可點按鈕＆存檔 ]</div>
+              <div style="display:flex;gap:8px;font-size:15px;font-weight:900;">
+                <span style="padding:6px 12px;border-radius:8px;background:#fdf2f8;border:2px solid #ec4899;color:#9d174d;">🌸 春天 7/7 🌟</span>
+                <span style="padding:6px 12px;border-radius:8px;background:#f1f5f9;border:1.5px solid #cbd5e1;color:#475569;">☀️ 夏天 4/7 ✏️</span>
+                <span style="padding:6px 12px;border-radius:8px;background:#f1f5f9;border:1.5px solid #cbd5e1;color:#475569;">🍂 秋天 未寫</span>
+              </div>
+              <div class="mock-step">
+                <span class="mock-badge">第 1 句</span> <strong>點出季節（第一行）</strong>
+                <div class="mock-input">春天的歌聲從哪裡來？</div>
+              </div>
+              <div class="mock-step">
+                <span class="mock-badge">第 2 句</span> <strong>搭配季節風向（第二行）</strong>
+                <div class="mock-input">歌聲乘著東風而來，</div>
+              </div>
+              <div class="mock-step">
+                <span class="mock-badge">第 3 句</span> <strong>點直式注音聲音卡 ➔ 寫進第 3 句框</strong>
+                <div class="mock-input">沙沙沙——</div>
+              </div>
+            </div>
+            <div class="list-steps">
+              <div class="list-step-item">
+                <span class="step-num-circle">1</span>
+                <div>
+                  <div style="font-size:22px;font-weight:900;margin-bottom:4px;">先選你的「座號（1～29 號）」</div>
+                  <div style="font-size:18px;font-weight:700;color:#475569;">不用背密碼！選好座號後，寫的每一句都會自動存進雲端跟平板裡。</div>
+                </div>
+              </div>
+              <div class="list-step-item">
+                <span class="step-num-circle">2</span>
+                <div>
+                  <div style="font-size:22px;font-weight:900;margin-bottom:4px;">一季一季寫，看標籤進度</div>
+                  <div style="font-size:18px;font-weight:700;color:#475569;">上方季節分頁會即時告訴你目前過了幾項（例：<strong style="color:#0f766e;">7/7 🌟</strong> 就過關囉）。</div>
+                </div>
+              </div>
+              <div class="list-step-item">
+                <span class="step-num-circle">3</span>
+                <div>
+                  <div style="font-size:22px;font-weight:900;margin-bottom:4px;">第 1、2 句分開兩格（各一行）</div>
+                  <div style="font-size:18px;font-weight:700;color:#475569;">第 3 句有<strong>直式注音</strong>聲音卡，點一顆就自動寫入第 3 句草稿框！</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 11：網站操作指南（下）：第 4～7 句、總草稿欄、AI 批改 -->
+      <section class="slide" data-title="11. 網站操作指南（下）：總草稿欄與 AI 批改">
+        <div class="slide-top">
+          <span class="slide-kicker">實作導入（下）</span>
+          <span class="slide-page-badge">11 / 12</span>
+        </div>
+        <h2 class="slide-h2">接著怎麼寫完 4～7 句，拿到 <span class="accent-teal">AI 老師建議</span>？</h2>
+        <div class="slide-body">
+          <div class="grid-2">
+            <div class="list-steps">
+              <div class="list-step-item" style="border-color:#93c5fd;background:#eff6ff;">
+                <span class="step-num-circle" style="background:#1d4ed8;">4</span>
+                <div>
+                  <div style="font-size:21px;font-weight:900;">第 4 句：點主角鈕，游標停在後面接著寫動作！</div>
+                  <div style="font-size:17px;font-weight:700;color:#334155;">例：點「小鳥」➔ 出現「春天的歌聲是小鳥<span style="color:#dc2626;">｜</span>，」，直接打「唱歌」或點「✏️ 自己想主角」。</div>
+                </div>
+              </div>
+              <div class="list-step-item" style="border-color:#fde68a;background:#fffbeb;">
+                <span class="step-num-circle" style="background:#d97706;">5</span>
+                <div>
+                  <div style="font-size:21px;font-weight:900;">第 5～7 句：參考橘色「例：」＋點句型按鈕替換</div>
+                  <div style="font-size:17px;font-weight:700;color:#334155;">點按鈕會連同 <code style="background:#fef3c7;padding:1px 5px;border-radius:4px;">（動詞）</code> 括號一起反白選取，打字就會直接換掉！</div>
+                </div>
+              </div>
+              <div class="list-step-item" style="border-color:#86efac;background:#f0fdf4;">
+                <span class="step-num-circle" style="background:#16a34a;">6</span>
+                <div>
+                  <div style="font-size:21px;font-weight:900;">完成 3 句以上，按「✨ 自動批改與給建議」</div>
+                  <div style="font-size:17px;font-weight:700;color:#334155;">先修好 7 項綠燈檢查，再看「秉辰師分身」抓錯字與示範句子！</div>
+                </div>
+              </div>
+            </div>
+            <div class="card teal" style="justify-content:space-between;">
+              <div>
+                <div class="card-title" style="color:#0f766e;">📝 最重要：底部的「總草稿欄」</div>
+                <div style="background:#fff;border:2.5px solid #2dd4bf;border-radius:12px;padding:14px 16px;font-size:19px;font-weight:800;line-height:1.65;color:#0f172a;margin-top:8px;">
+                  春天的歌聲從哪裡來？<br>
+                  歌聲乘著東風而來，<br>
+                  沙沙沙——<br>
+                  春天的歌聲是小鳥唱歌，<br>
+                  飛過花園，穿過大樹，<br>
+                  帶著一枝可愛的小喇叭，<br>
+                  大聲對大家說：「春天來了！」
+                </div>
+              </div>
+              <div style="background:#fff;border:2px solid #99f6e4;border-radius:12px;padding:12px 16px;font-size:18px;font-weight:900;color:#0f766e;line-height:1.5;">
+                ✅ 系統已幫你自動把「（、）括號」全部拿掉！<br>
+                ✅ 可直接在總草稿欄修改錯字，上方格子會雙向同步；最後對著這裡（或「預覽整篇」）抄進作文紙就好！
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 12：開寫囉！（QR Code＋網址＋任務檢核） -->
+      <section class="slide" data-title="12. 開寫囉！QR Code 與今日任務">
+        <div class="slide-top">
+          <span class="slide-kicker">實作啟動</span>
+          <span class="slide-page-badge">12 / 12</span>
+        </div>
+        <h2 class="slide-h2">打開平板／電腦，掃描 QR Code 開始寫作！</h2>
+        <div class="slide-body">
+          <div class="grid-2" style="grid-template-columns: 0.95fr 1.05fr;">
+            <div class="qr-panel">
+              <img src="student-qrcode.png" alt="四年二班《四季的歌聲》寫作平台 QR Code">
+              <div class="url-box">https://bcsedu.github.io/chaohe-402-seasons-essay/</div>
+              <div class="cta-row">
+                <a class="cta-btn" href="index.html" target="_blank" rel="noopener">📝 開啟學生寫作網站</a>
+                <a class="cta-btn secondary" href="teacher.html" target="_blank" rel="noopener">👩‍🏫 教師管理後台</a>
+              </div>
+            </div>
+            <div class="card amber" style="justify-content:space-between;">
+              <div>
+                <div class="card-title" style="color:#b45309;font-size:28px;">✅ 今日課堂寫作檢核表</div>
+                <div class="list-steps" style="margin-top:12px;gap:12px;">
+                  <div class="list-step-item" style="padding:12px 16px;">
+                    <span class="step-num-circle">1</span>
+                    <div style="font-size:20px;font-weight:800;">選好自己的 <strong>座號（1～29 號）</strong></div>
+                  </div>
+                  <div class="list-step-item" style="padding:12px 16px;">
+                    <span class="step-num-circle">2</span>
+                    <div style="font-size:20px;font-weight:800;">先寫完 <strong>第一段「春天」</strong> 7 句，挑戰拿到 <strong style="color:#0f766e;">7/7 🌟</strong></div>
+                  </div>
+                  <div class="list-step-item" style="padding:12px 16px;">
+                    <span class="step-num-circle">3</span>
+                    <div style="font-size:20px;font-weight:800;">按 <strong>✨ 自動批改與給建議</strong>，照著改錯字、讓句子更生動</div>
+                  </div>
+                  <div class="list-step-item" style="padding:12px 16px;">
+                    <span class="step-num-circle">4</span>
+                    <div style="font-size:20px;font-weight:800;">還有時間，接著寫 <strong>夏、秋、冬</strong>；最後按 <strong>💾 立即存檔</strong>！</div>
+                  </div>
+                </div>
+              </div>
+              <div style="text-align:center;font-size:20px;font-weight:900;color:#0f766e;">
+                🎵 期待聽見全班 29 份不一樣的《四季的歌聲》！
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- 底部教師操作列 -->
+  <nav class="presenter-hud" aria-label="簡報投影控制列">
+    <div class="hud-group">
+      <button type="button" class="hud-btn" id="btn-prev" onclick="prevSlide()">◀ 上一頁</button>
+      <select class="slide-select" id="slide-select" aria-label="快速切換投影片" onchange="goToSlide(Number(this.value))"></select>
+      <button type="button" class="hud-btn primary" id="btn-next" onclick="nextSlide()">下一頁 ▶</button>
+    </div>
+
+    <div class="dots-bar" id="dots-bar"></div>
+
+    <div class="hud-group">
+      <button type="button" class="hud-btn" onclick="toggleFullscreen()">🖥️ 全螢幕 (F)</button>
+      <button type="button" class="hud-btn hud-hide-sm" onclick="window.print()">🖨️ 列印 / 存 PDF</button>
+      <a class="hud-btn primary" href="index.html" target="_blank" rel="noopener">📝 學生網站</a>
+      <a class="hud-btn hud-hide-sm" href="teacher.html" target="_blank" rel="noopener">👩‍🏫 教師後台</a>
+    </div>
+  </nav>
+
+  <script src="js/config.js?v=20261122"></script>
+  <script>
+    const deckFrame = document.getElementById("deck-frame");
+    const stageViewport = document.getElementById("stage-viewport");
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const slideSelect = document.getElementById("slide-select");
+    const dotsBar = document.getElementById("dots-bar");
+    let currentSlide = 0;
+
+    // 16:9 舞台自適應縮放，確保教室投影機／筆電／平板皆滿版清晰不破版
+    function fitDeckToViewport() {
+      const vw = Math.max(320, stageViewport.clientWidth - 20);
+      const vh = Math.max(240, stageViewport.clientHeight - 16);
+      const scale = Math.min(vw / 1280, vh / 720);
+      deckFrame.style.transform = `scale(${scale})`;
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function renderVerticalZhuyinWord(word, zhuyinStr) {
+      const syllables = String(zhuyinStr || "").trim().split(/\s+/).filter(Boolean);
+      let sylIdx = 0;
+      const parts = Array.from(String(word || "")).map((ch) => {
+        if (/[！!？?，,。.、—\-]/.test(ch)) {
+          return `<span class="zy-punct">${escapeHtml(ch)}</span>`;
+        }
+        const syl = syllables[sylIdx++] || "";
+        if (!syl) {
+          return `<span class="zy-han">${escapeHtml(ch)}</span>`;
+        }
+        const toneMatch = syl.match(/[ˊˇˋ˙]/);
+        const tone = toneMatch ? toneMatch[0] : "";
+        const syms = Array.from(syl.replace(/[ˊˇˋ˙]/g, ""));
+        return `
+          <span class="zy-pair">
+            <span class="zy-han">${escapeHtml(ch)}</span>
+            <span class="zy-bopo">
+              <span class="zy-syms">${syms.map((s) => `<span>${escapeHtml(s)}</span>`).join("")}</span>
+              ${tone ? `<span class="zy-tone">${escapeHtml(tone)}</span>` : ""}
+            </span>
+          </span>
+        `;
+      });
+      return `<div class="zy-word-row">${parts.join("")}</div>`;
+    }
+
+    function initControls() {
+      slideSelect.innerHTML = slides
+        .map((s, idx) => `<option value="${idx}">${escapeHtml(s.dataset.title || `第 ${idx + 1} 頁`)}</option>`)
+        .join("");
+
+      dotsBar.innerHTML = slides
+        .map((_, idx) => `<button type="button" class="dot-btn" aria-label="第 ${idx + 1} 頁" onclick="goToSlide(${idx})"></button>`)
+        .join("");
+    }
+
+    function goToSlide(index) {
+      const clamped = Math.max(0, Math.min(slides.length - 1, index));
+      currentSlide = clamped;
+      slides.forEach((s, idx) => s.classList.toggle("active", idx === clamped));
+      slideSelect.value = String(clamped);
+      dotsBar.querySelectorAll(".dot-btn").forEach((dot, idx) => {
+        dot.classList.toggle("active", idx === clamped);
+      });
+      document.getElementById("btn-prev").disabled = clamped === 0;
+      document.getElementById("btn-next").disabled = clamped === slides.length - 1;
+      if (window.location.hash !== `#s${clamped + 1}`) {
+        history.replaceState(null, "", `#s${clamped + 1}`);
+      }
+    }
+
+    function nextSlide() { goToSlide(currentSlide + 1); }
+    function prevSlide() { goToSlide(currentSlide - 1); }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.().catch(() => {});
+      } else {
+        document.exitFullscreen?.().catch(() => {});
+      }
+    }
+
+    // Slide 4：逐句揭示與點選聚焦
+    let revealedMax = 0;
+    function focusRevealLine(idx) {
+      if (idx > revealedMax) revealedMax = idx;
+      const lineBtns = document.querySelectorAll("#reveal-poem-list .poem-line-btn");
+      const ruleRows = document.querySelectorAll("#reveal-rule-list .rule-row");
+      lineBtns.forEach((b, i) => {
+        b.classList.toggle("active", i === idx);
+        b.classList.toggle("revealed", i <= revealedMax);
+      });
+      ruleRows.forEach((r, i) => {
+        r.classList.remove("active", "revealed", "dim");
+        if (i === idx) r.classList.add("active");
+        else if (i <= revealedMax) r.classList.add("revealed");
+        else r.classList.add("dim");
+      });
+    }
+    function nextRevealLine() {
+      const nextIdx = Math.min(6, revealedMax + 1);
+      focusRevealLine(nextIdx);
+    }
+    function revealAllLines() {
+      revealedMax = 6;
+      focusRevealLine(6);
+    }
+    function resetRevealLines() {
+      revealedMax = 0;
+      focusRevealLine(0);
+    }
+
+    // Slide 5：載入直式注音單字三連音精選
+    function initSlide5Sounds() {
+      const container = document.getElementById("slide5-triples");
+      const picks = [
+        { word: "沙沙沙", zhuyin: "ㄕㄚ ㄕㄚ ㄕㄚ", note: "🌸 春風花瓣" },
+        { word: "啾啾啾", zhuyin: "ㄐㄧㄡ ㄐㄧㄡ ㄐㄧㄡ", note: "🐦 春天小鳥" },
+        { word: "轟隆隆", zhuyin: "ㄏㄨㄥ ㄌㄨㄥˊ ㄌㄨㄥˊ", note: "⚡ 夏天打雷" },
+        { word: "刷刷刷", zhuyin: "ㄕㄨㄚ ㄕㄨㄚ ㄕㄨㄚ", note: "🍂 秋天落葉" },
+        { word: "呼呼呼", zhuyin: "ㄏㄨ ㄏㄨ ㄏㄨ", note: "❄️ 冬天北風" },
+        { word: "咻！咻！咻！", zhuyin: "ㄒㄧㄡ ㄒㄧㄡ ㄒㄧㄡ", note: "🌾 課文芒草" }
+      ];
+      container.innerHTML = picks
+        .map((item) => `
+          <div class="sound-card-mini">
+            ${renderVerticalZhuyinWord(item.word, item.zhuyin)}
+            <span class="sound-tag-caption">${escapeHtml(item.note)}</span>
+          </div>
+        `)
+        .join("");
+    }
+
+    // Slide 8：四季範文共賞＋講義內容分析
+    const SEASON_ANALYSES = {
+      p1: {
+        title: "🌸 春天巧思：把花瓣聯想成粉紅雪花",
+        analysis: "春天運用櫻花綻放的畫面，將飄落的花朵聯想成片片「粉紅色雪花」，帶著喜悅熱鬧的心情，開口向大家宣布春天來了！",
+        note: "💡 第 7 句用「說話型」結尾，讓主角直接開口說話，整首詩立刻活起來。"
+      },
+      p2: {
+        title: "☀️ 夏天巧思：把打雷比喻成打大鼓",
+        analysis: "夏天不只寫下雨，還把轟隆隆的雷聲比喻成「雷公用力打大鼓」、閃電變成「發光的閃電鼓棒」，寫出令人震撼又有活力的夏季氣氛。",
+        note: "💡 第 7 句用「反應型（嚇得直發抖）」，寫出大家的反應，更有真實感！"
+      },
+      p3: {
+        title: "🍂 秋天巧思：把落葉變成希望的種子",
+        analysis: "枯葉雖然讓人聯想到涼意與蕭瑟，但這段寫出不屈的想像力——落葉乘風飛過操場，化成一顆顆「希望的小種子」，溫柔送到人們心中。",
+        note: "💡 學習單重點：秋天不一定要寫悲傷，也可以「化作養分、種下希望」！"
+      },
+      p4: {
+        title: "❄️ 冬天巧思：動感奔馳展現北風與滑雪威風",
+        analysis: "結合課文滑雪板「幫山頂梳銀色長辮子」，用「衝、滑、飛」一連串有速度感的動詞，展現冬天的氣勢與逼人氣魄！",
+        note: "💡 避開地雷：第 2 句已經寫「北風」，第 4 句換成「滑雪板」更豐富！"
+      }
+    };
+
+    function selectSlide8Season(sk) {
+      const cfg = window.SEASONS_CONFIG?.SEASONS?.[sk];
+      if (!cfg) return;
+      document.querySelectorAll("#slide8-tabs .s-tab-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.sk === sk);
+      });
+      const poemCard = document.getElementById("slide8-poem-card");
+      poemCard.innerHTML = cfg.exampleLines
+        .map((line, i) => `
+          <div class="poem-display-line">
+            <span class="poem-display-num" style="background:${cfg.color}">${i + 1}</span>
+            <span>${escapeHtml(line)}</span>
+          </div>
+        `)
+        .join("");
+      const info = SEASON_ANALYSES[sk];
+      document.getElementById("slide8-analysis-title").textContent = info.title;
+      document.getElementById("slide8-analysis-text").textContent = info.analysis;
+      document.getElementById("slide8-compare-box").textContent = info.note;
+    }
+
+    // Slide 9：抓蟲揭曉
+    function toggleQuiz(idx) {
+      document.getElementById(`quiz-ans-${idx}`)?.classList.toggle("open");
+    }
+    function revealAllQuiz() {
+      [0, 1, 2].forEach((i) => document.getElementById(`quiz-ans-${i}`)?.classList.add("open"));
+    }
+    function resetQuiz() {
+      [0, 1, 2].forEach((i) => document.getElementById(`quiz-ans-${i}`)?.classList.remove("open"));
+    }
+
+    // 鍵盤與觸控滑動支援
+    document.addEventListener("keydown", (e) => {
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
+      if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " " || e.key === "ArrowDown") {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === "ArrowLeft" || e.key === "PageUp" || e.key === "ArrowUp") {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === "f" || e.key === "F") {
+        e.preventDefault();
+        toggleFullscreen();
+      }
+    });
+
+    let touchStartX = null;
+    stageViewport.addEventListener("touchstart", (e) => {
+      touchStartX = e.changedTouches?.[0]?.clientX ?? null;
+    }, { passive: true });
+    stageViewport.addEventListener("touchend", (e) => {
+      if (touchStartX === null) return;
+      const dx = (e.changedTouches?.[0]?.clientX ?? touchStartX) - touchStartX;
+      touchStartX = null;
+      if (Math.abs(dx) > 60) {
+        if (dx < 0) nextSlide();
+        else prevSlide();
+      }
+    }, { passive: true });
+
+    window.addEventListener("resize", fitDeckToViewport);
+    window.addEventListener("DOMContentLoaded", () => {
+      initControls();
+      initSlide5Sounds();
+      selectSlide8Season("p1");
+      fitDeckToViewport();
+      const hashMatch = window.location.hash.match(/^#s(\d+)$/);
+      const initialIdx = hashMatch ? Number(hashMatch[1]) - 1 : 0;
+      goToSlide(initialIdx);
+    });
+  </script>
+</body>
+</html>
