@@ -517,11 +517,13 @@ Deno.serve(async (req: Request) => {
       });
 
       const ruleReports: Record<string, RuleReport> = { ...(existing?.rule_reports ?? {}) };
+      const feedbackDict: Record<string, string> = { ...(existing?.feedback ?? {}) };
       (["p1", "p2", "p3", "p4"] as SeasonKey[]).forEach((k) => {
         if (merged[k].trim()) {
           ruleReports[k] = gradeSeasonParagraph(k, merged[k]);
         } else if (k === activeTab) {
           delete ruleReports[k];
+          delete feedbackDict[k];
         }
       });
 
@@ -531,7 +533,7 @@ Deno.serve(async (req: Request) => {
           {
             seat,
             ...merged,
-            feedback: existing?.feedback ?? {},
+            feedback: feedbackDict,
             rule_reports: ruleReports,
           },
           { onConflict: "seat" }
@@ -540,7 +542,7 @@ Deno.serve(async (req: Request) => {
         .single();
 
       if (error) return jsonResponse({ error: error.message }, 500);
-      return jsonResponse({ status: "saved", updated_at: savedRow.updated_at, rule_reports: ruleReports });
+      return jsonResponse({ status: "saved", updated_at: savedRow.updated_at, rule_reports: ruleReports, feedback: feedbackDict });
     }
 
     // --- 3. 自動批改與建議（免密碼：規則結構檢查 + Gemini AI 細批） ---
